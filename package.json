@@ -1,0 +1,52 @@
+{
+  "name": "princeton-gerrymandering",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run dev & npm run api", 
+    "dev": "webpack-dev-server --config=config/webpack.config.js --hot",
+    "build": "webpack --config=config/webpack.config.js",
+    "api": "python3 ./api/main.py"
+  },
+  "keywords": [],
+  "author": "Jared Asch <jaredasch1@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "@types/react": "^16.9.23",
+    "@types/react-dom": "^16.9.5",
+    "@types/react-router-dom": "^5.1.3",
+    "antd": "^4.0.3",
+    "axios": "^0.19.2",
+    "dotenv": "^8.2.0",
+    "less": "^3.11.1",
+    "react": "^16.13.0",
+    "react-dom": "^16.13.0",
+    "react-router-dom": "^5.1.2",
+    "typescript": "^3.8.3",
+    "webpack": "^4.42.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-middleware": "^3.7.2",
+    "webpack-dev-server": "^3.10.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.7",
+    "@babel/plugin-transform-arrow-functions": "^7.8.3",
+    "@babel/preset-env": "^7.8.7",
+    "@babel/preset-typescript": "^7.8.3",
+    "@babel/register": "^7.8.6",
+    "@svgr/webpack": "^5.3.0",
+    "babel-loader": "^8.0.6",
+    "babel-plugin-import": "^1.13.0",
+    "babel-preset-minify": "^0.5.1",
+    "css-loader": "^3.4.2",
+    "file-loader": "^5.1.0",
+    "less-loader": "^5.0.0",
+    "nodemon": "^2.0.2",
+    "react-svg-loader": "^3.0.3",
+    "style-loader": "^1.1.3",
+    "ts-loader": "^6.2.1",
+    "webpack-bundle-analyzer": "^3.6.1"
+  },
+  "proxy": "http://localhost:5000"
+}
