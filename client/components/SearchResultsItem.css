@@ -1,0 +1,12 @@
+.microlink_card__content {
+  visibility: hidden !important;
+  display: block !important;
+  height: 0;
+  flex: none !important;
+  padding: 0 !important;
+};
+
+.microlink_card {
+  height: 128px !important;
+  width: 200px !important;
+};
