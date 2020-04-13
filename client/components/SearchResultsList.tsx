@@ -4,10 +4,7 @@ import { List } from 'antd';
 import SearchResultsItem from "../components/SearchResultsItem";
 
 interface Tags {
-    locations: string[];
-    orgs: string[];
-    groups: string[];
-    time: string[];
+    [propName: string]: string[];
 }
 
 interface Result {
@@ -29,8 +26,8 @@ const SearchResultsList: React.FC<SearchResultsListProps> = ({ results = [], sho
     const searchResult = showResults ?
     (
       <List
-        itemLayout="vertical"
-        size="large"
+        itemLayout="horizontal"
+        size="small"
         pagination={{
           onChange: page => {
             console.log(page);

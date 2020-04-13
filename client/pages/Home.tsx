@@ -17,10 +17,7 @@ interface Filter {
 }
 
 interface Tags {
-    locations: string[];
-    orgs: string[];
-    groups: string[];
-    time: string[];
+    [propName: string]: string[];
 }
 
 interface Result {

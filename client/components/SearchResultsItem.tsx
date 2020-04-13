@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom'
-import { List, Avatar } from 'antd';
-import Microlink from '@microlink/react'
+import { List, Avatar, Tag } from 'antd';
 import SearchResultsIcon from "../components/SearchResultsIcon";
 import './SearchResultsItem.css';
 
 interface Tags {
-    locations: string[];
-    orgs: string[];
-    groups: string[];
-    time: string[];
+    [propName: string]: string[];
+}
+
+interface TagsMap {
+    [propName: string]: string;
 }
 
 interface Result {
@@ -28,32 +28,36 @@ interface SearchResultsItemProps {
 const SearchResultsItem: React.FC<SearchResultsItemProps> = ({ item }: SearchResultsItemProps) => {
 
     const avatarIcon = <SearchResultsIcon filetype={item.type} />;
+    const colorMap: TagsMap = {
+      "locations": "magenta",
+      "orgs": "orange",
+      "groups": "green",
+      "time": "geekblue",
+      "people": "purple",
 
-    // const tagList = filters.map((filter, index) => (
-    //   <FilterRow
-    //     key={filter.id}
-    //     id={filter.id}
-    //     deleteRow={deleteFilterRow}
-    //     updateRow={updateFilterRow}
-    //     index={index}
-    //     updateIsOr={updateIsOr}
-    //     isOr={isOr}
-    //     />)
-    // );
+    };
+    const tags: { text: string; color: string; }[] = [];
+    Object.keys(item.tags).forEach(element => {
+      item.tags[element].forEach(tag => {
+        tags.push({
+          "text": tag,
+          "color": colorMap[element]
+        })
+      });
+    });
+    const tagList = tags.map((tag, index) => (
+      <Tag key={index} color={tag.color}>{tag.text}</Tag>)
+    );
 
     return (
       <List.Item
         key={item.id}
-        extra={
-           <Microlink size="large" url='https://instagram.com/p/Bu1-PpyHmCn/' />
-        }
       >
         <List.Item.Meta
-          avatar={<Avatar size={64} shape="square" icon={avatarIcon} />}
+          avatar={<Avatar size={64} style={{ textAlign: "center" }} shape="square" icon={avatarIcon} />}
           title={<a href={item.file}>{item.name}</a>}
-          description={item.text}
+          description={tagList}
         />
-        {item.text}
       </List.Item>
     )
 };
