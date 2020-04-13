@@ -7,12 +7,26 @@ const { Search } = Input;
 const { Content, Footer } = Layout;
 import Navbar from "../components/Navbar";
 import FilterModal from "../components/FilterModal";
+import SearchResultsList from "../components/SearchResultsList";
 import Banner from "../assets/banner.svg";
 
 interface Filter {
     attribute: string;
     filter: string;
     value: string;
+}
+
+interface Tags {
+    [propName: string]: string[];
+}
+
+interface Result {
+    id: number;
+    file: string;
+    name: string;
+    tags: Tags;
+    text: string;
+    type: string;
 }
 
 interface PostQuery {
@@ -26,8 +40,28 @@ const Home: React.FC = () => {
     const [filters, setFilters] = useState<Filter[]>([]);
     const [query, setQuery] = useState("");
     const [isOr, setIsOr] = useState(false);
+    const [showResults, setShowResults] = useState(false);
+    const [results, setResults] = useState<Result[]>([]);
+
+    const listData = [];
+    for (let i = 0; i < 11; i++) {
+      listData.push({
+        id: i,
+        file: 'test-data/2002 Districts 2010.xlsx',
+        name: "2002 Districts 2010.xlsx",
+        tags: {
+          "locations": ["Arizona", "Bushwick", "California"],
+          "orgs": ["RNC", "GOP", "DNC"],
+          "groups": ["Latinos", "Asians"],
+          "time": ["2002", "2020"]
+        },
+        text: "Ant Design, a design language for background applications, is refined by Ant UED Team.",
+        type: "xlsx"
+      });
+    }
 
     const search = (values : any) => {
+        setShowResults(true);
         axios.post<PostQuery>("http://localhost:5000/api/search", {
             query,
             filters,
@@ -59,12 +93,12 @@ const Home: React.FC = () => {
                 <Search placeholder="Search for files..." onSearch={search} onChange={(e) => setQuery(e.target.value)} size="large" enterButton />
                 <Button type="link" style={{ paddingLeft: 0 }} onClick={() => setModalShowing(true)}>Filter</Button>
                 <FilterModal show={isModalShowing} onClose={closeModal} updateFilters={updateFilters} updateIsOr={updateIsOr} isOr={isOr}/>
+                <SearchResultsList showResults={showResults} results={listData}></SearchResultsList>
               </div>
             </Content>
             <Footer style={{ textAlign: 'center' }}>The Hoeffler Files</Footer>
-
         </Layout>
     );
-}
+};
 
-export default Home
+export default Home;
