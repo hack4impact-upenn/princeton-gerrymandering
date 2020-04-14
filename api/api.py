@@ -9,6 +9,7 @@ es = Elasticsearch(['https://search-princeton-gerrymandering-tdoxp3nyeow6asnjm3r
 @api.route("/search", methods = ["GET", "POST"])
 def api_index():
     req = request.get_json()
+
     and_filters = []
     and_not_filters = []
     or_filters = []
@@ -67,8 +68,7 @@ def api_index():
                 "should": or_filters,
             }
         },
-        "size": req['pageSize'],
-        "from": req['pageSize'] * (req['page'] - 1)
+        "size": "10000"
     }
 
     res = es.search(index="pgp", body=query)

@@ -34,9 +34,7 @@ interface Result {
 interface PostQuery {
     query: string;
     filters: Array<Filter>;
-    isOr: boolean;
-    page: number;
-    pageSize: number;
+    isOr: boolean
 }
 
 const Home: React.FC = () => {
@@ -49,10 +47,6 @@ const Home: React.FC = () => {
     const [showResults, setShowResults] = useState(false);
     const [loaded, setLoaded] = useState(false);
     const [results, setResults] = useState<Result[]>([]);
-
-    const [totalResults, setTotalResults] = useState(0); 
-    const [pageSize, setPageSize] = useState(5);
-    const [page, setPage] = useState(1)
 
     // const listData = [];
     // for (let i = 0; i < 11; i++) {
@@ -71,22 +65,16 @@ const Home: React.FC = () => {
     //   });
     // }
 
-    const search = (values : any, page : number, pageSize : number) => {
+    const search = (values : any) => {
         setLoaded(false);
         setShowResults(true);
-        setPage(1);
         axios.post<PostQuery>("http://localhost:5000/api/search", {
             query,
             filters,
-            isOr,
-            page,
-            pageSize
+            isOr
         }).then( (res) => {
             const data = res.data as any;
             const hits = data.hits.hits
-
-            console.log(data.hits.total.value);
-            setTotalResults(data.hits.total.value);
 
             const results : Result[] = []
             hits.forEach( (document : any) => {
@@ -124,7 +112,7 @@ const Home: React.FC = () => {
 
     useEffect(() => {
       if( showResults ){
-        search(query, page, pageSize);
+        search(query)
       }
     }, [filters])
 
@@ -141,12 +129,8 @@ const Home: React.FC = () => {
     }
 
     // Want to make it only load the ones needed instead of all for performance
-    const onPageChange = (newPage: number, newPageSize: number | undefined) => {
-      setPage(page);
-      if(typeof newPageSize !== undefined){
-        setPageSize(newPageSize || 10);
-      }
-      search(query, newPage, newPageSize || 10);
+    const onPageChange = (page: number, pageSize: number | undefined) => {
+      console.log(page, pageSize);
     }
 
     return (
@@ -154,10 +138,10 @@ const Home: React.FC = () => {
             <Navbar></Navbar>
             <Content className="site-layout" style={{ padding: '50px', paddingBottom: 0, marginTop: 64 }}>
               <div className="site-layout-content" style={{ background: "#fff", padding: 24 }}>
-                <Search placeholder="Search for files..." onSearch={(values) => search(values, page, pageSize)} onChange={(e) => setQuery(e.target.value)} size="large" enterButton />
+                <Search placeholder="Search for files..." onSearch={search} onChange={(e) => setQuery(e.target.value)} size="large" enterButton />
                 <Button type="link" style={{ padding: "10px 10px 10px 0" }} onClick={() => setModalShowing(true)}><FilterOutlined></FilterOutlined>Filter Results</Button>
                 <FilterModal show={isModalShowing} onClose={closeModal} updateFilters={updateFilters} updateIsOr={updateIsOr} isOr={isOr}/>
-                <SearchResultsList showResults={showResults} results={results} resultsLoaded = {loaded} onPageChange = {onPageChange} totalResults = {totalResults}></SearchResultsList>
+                <SearchResultsList showResults={showResults} results={results} resultsLoaded = {loaded} onPageChange = {onPageChange}></SearchResultsList>
               </div>
             </Content>
             <Footer style={{ textAlign: 'center' }}>The Hofeller Files</Footer>
