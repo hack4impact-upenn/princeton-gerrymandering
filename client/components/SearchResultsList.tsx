@@ -21,11 +21,12 @@ interface SearchResultsListProps {
     showResults: boolean
     resultsLoaded: boolean,
     totalResults: number,
-    page: number
+    page: number,
+    pageSize: number,
     onPageChange: (page: number, pageSize: number | undefined) => void
 };
 
-const SearchResultsList: React.FC<SearchResultsListProps> = ({ results = [], showResults, totalResults, resultsLoaded, onPageChange, page }: SearchResultsListProps) => {
+const SearchResultsList: React.FC<SearchResultsListProps> = ({ results = [], showResults, totalResults, resultsLoaded, onPageChange, page, pageSize }: SearchResultsListProps) => {
 
     const searchResult = showResults ?
     (
@@ -40,11 +41,10 @@ const SearchResultsList: React.FC<SearchResultsListProps> = ({ results = [], sho
         />
         { resultsLoaded && 
           <Pagination
-            showTotal={total => ''}
-            defaultCurrent={1}
+            current={page}
             onShowSizeChange = {onPageChange}
             onChange = {onPageChange}
-            defaultPageSize = {5}
+            pageSize = {pageSize}
             pageSizeOptions = {['5', '10', '20', '50']}
             style = {{ marginTop: "10px"}}
             total = {totalResults} 

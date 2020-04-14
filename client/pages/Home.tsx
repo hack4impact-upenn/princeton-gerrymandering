@@ -74,7 +74,6 @@ const Home: React.FC = () => {
     const search = (values : any, page_ : number, pageSize_ : number) => {
         setLoaded(false);
         setShowResults(true);
-        setPage(1);
         axios.post<PostQuery>("http://localhost:5000/api/search", {
             query,
             filters,
@@ -123,6 +122,7 @@ const Home: React.FC = () => {
 
     useEffect(() => {
       if( showResults ){
+        setPage(1);
         search(query, page, pageSize);
       }
     }, [filters])
@@ -141,6 +141,7 @@ const Home: React.FC = () => {
 
     // Want to make it only load the ones needed instead of all for performance
     const onPageChange = (newPage: number, newPageSize: number | undefined) => {
+      console.log(newPageSize);
       setPage(newPage);
       if(typeof newPageSize !== undefined){
         setPageSize(newPageSize || 10);
@@ -156,7 +157,7 @@ const Home: React.FC = () => {
                 <Search placeholder="Search for files..." onSearch={(values) => search(values, page, pageSize)} onChange={(e) => setQuery(e.target.value)} size="large" enterButton />
                 <Button type="link" style={{ padding: "10px 10px 10px 0" }} onClick={() => setModalShowing(true)}><FilterOutlined></FilterOutlined>Filter Results</Button>
                 <FilterModal show={isModalShowing} onClose={closeModal} updateFilters={updateFilters} updateIsOr={updateIsOr} isOr={isOr}/>
-                <SearchResultsList page = {page} showResults={showResults} results={results} resultsLoaded = {loaded} onPageChange = {onPageChange} totalResults = {totalResults}></SearchResultsList>
+                <SearchResultsList pageSize = {pageSize} page = {page} showResults={showResults} results={results} resultsLoaded = {loaded} onPageChange = {onPageChange} totalResults = {totalResults}></SearchResultsList>
               </div>
             </Content>
             <Footer style={{ textAlign: 'center' }}>The Hofeller Files</Footer>
