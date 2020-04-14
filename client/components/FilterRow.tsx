@@ -87,23 +87,23 @@ const FilterRow: React.FC<FilterRowProps> = ({ id, index, deleteRow, updateRow, 
           onChange={(e) => updateAttribute(e.toString())}
           style={{ minWidth: 168 }}
         >
-          <Option value="locations">Locations</Option>
-          <Option value="people">People</Option>
-          <Option value="orgs">Organizations</Option>
+          <Option value="sarah">Sarah</Option>
+          <Option value="jared">Jared</Option>
+          <Option value="ben">Ben</Option>
         </Select>
         <Select
           placeholder="Select a filter"
           onChange={(e) => updateFilter(e.toString())}
           style={{ minWidth: 168 }}
         >
-          {/* <Option value="is">Is</Option>
-          <Option value="is_not">Is not</Option> */}
+          <Option value="is">Is</Option>
+          <Option value="is_not">Is not</Option>
           <Option value="contains">Contains</Option>
           <Option value="contains_not">Does not contain</Option>
-          {/* <Option value="starts_with">Starts with</Option>
+          <Option value="starts_with">Starts with</Option>
           <Option value="ends_with">Ends with</Option>
           <Option value="empty">Is empty</Option>
-          <Option value="empty_not">Is not empty</Option> */}
+          <Option value="empty_not">Is not empty</Option>
         </Select>
         <Input placeholder="Value" onChange={(e) => updateValue(e.target.value)} style={{ width: '100%' }}/>
         <Button type="primary" icon={<CloseOutlined />} onClick={(e) => deleteRow(id)}/>

@@ -23,7 +23,7 @@ interface FilterModalProps {
     show: boolean;
     updateFilters: (filters: Array<Filter>) => void;
     updateIsOr: (or: boolean) => void;
-    isOr: boolean,
+    isOr: boolean
 };
 
 var id = 0;
