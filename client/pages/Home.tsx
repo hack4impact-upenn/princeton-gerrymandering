@@ -73,8 +73,6 @@ const Home: React.FC = () => {
             filters,
             isOr
         }).then( (res) => {
-            console.log("yeet")
-
             const data = res.data as any;
             const hits = data.hits.hits
 
@@ -83,11 +81,6 @@ const Home: React.FC = () => {
                 const filename = document._source.path;
                 const file_ext = filename.split(".").slice(-1)[0]
 
-                // const tags : Tags = {
-                //   locations: document._source.tags.locations == undefined ? [] :  document._source.tags.locations,
-                //   orgs: document._source.tags.org == undefined ? [] :  document._source.tags.org,
-                //   people: [...(new Set<string>(document._source.tags.people == undefined ? [] :  document._source.tags.people))],    
-                // }
 
                 const tags : Tags = {}
                 Object.keys(document._source.tags).forEach( (tag : string) => {
@@ -117,6 +110,12 @@ const Home: React.FC = () => {
         })
     };
 
+    useEffect(() => {
+      if( showResults ){
+        search(query)
+      }
+    }, [filters])
+
     const closeModal = () => {
       setModalShowing(false);
     };
@@ -129,6 +128,11 @@ const Home: React.FC = () => {
       setIsOr(or);
     }
 
+    // Want to make it only load the ones needed instead of all for performance
+    const onPageChange = (page: number, pageSize: number | undefined) => {
+      console.log(page, pageSize);
+    }
+
     return (
         <Layout>
             <Navbar></Navbar>
@@ -137,7 +141,7 @@ const Home: React.FC = () => {
                 <Search placeholder="Search for files..." onSearch={search} onChange={(e) => setQuery(e.target.value)} size="large" enterButton />
                 <Button type="link" style={{ padding: "10px 10px 10px 0" }} onClick={() => setModalShowing(true)}><FilterOutlined></FilterOutlined>Filter Results</Button>
                 <FilterModal show={isModalShowing} onClose={closeModal} updateFilters={updateFilters} updateIsOr={updateIsOr} isOr={isOr}/>
-                <SearchResultsList showResults={showResults} results={results} resultsLoaded = {loaded}></SearchResultsList>
+                <SearchResultsList showResults={showResults} results={results} resultsLoaded = {loaded} onPageChange = {onPageChange}></SearchResultsList>
               </div>
             </Content>
             <Footer style={{ textAlign: 'center' }}>The Hofeller Files</Footer>

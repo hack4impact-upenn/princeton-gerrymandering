@@ -20,9 +20,10 @@ interface SearchResultsListProps {
     results?: Result[]
     showResults: boolean
     resultsLoaded: boolean
+    onPageChange: (page: number, pageSize: number | undefined) => void
 };
 
-const SearchResultsList: React.FC<SearchResultsListProps> = ({ results = [], showResults, resultsLoaded}: SearchResultsListProps) => {
+const SearchResultsList: React.FC<SearchResultsListProps> = ({ results = [], showResults, resultsLoaded, onPageChange }: SearchResultsListProps) => {
 
     const searchResult = showResults ?
     (
@@ -31,10 +32,10 @@ const SearchResultsList: React.FC<SearchResultsListProps> = ({ results = [], sho
         itemLayout="horizontal"
         size="small"
         pagination={{
-          onChange: page => {
-            console.log(page);
-          },
-          pageSize: 3,
+          showSizeChanger: true,
+          pageSizeOptions: ['5', '10', '20', '50'],
+          onChange: onPageChange,
+          defaultPageSize: 5
         }}
         dataSource={results}
         renderItem={item => (

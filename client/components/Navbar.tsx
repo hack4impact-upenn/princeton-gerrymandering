@@ -41,7 +41,7 @@ const Navbar: React.FC<NavbarProps> = ({ selected = "", hideMenu = false}: Navba
                     style={{ lineHeight: '62px', float: "right", borderBottom: "none" }}
                     defaultSelectedKeys={[selected]}
                 >
-                    <Menu.Item key="about">
+                    {/* <Menu.Item key="about">
                         <Link to="/about">About</Link>
                     </Menu.Item>
                     <Menu.Item key="projects">
@@ -49,7 +49,7 @@ const Navbar: React.FC<NavbarProps> = ({ selected = "", hideMenu = false}: Navba
                     </Menu.Item>
                     <Menu.Item key="apply">
                         <Link to="/apply">Apply</Link>
-                    </Menu.Item>
+                    </Menu.Item> */}
                 </Menu>
             }
 
@@ -59,7 +59,7 @@ const Navbar: React.FC<NavbarProps> = ({ selected = "", hideMenu = false}: Navba
                     mode="horizontal"
                     style={{ lineHeight: '62px', float: "right", borderBottom: "none" }}
                 >
-                    <SubMenu title={<MenuOutlined></MenuOutlined>}>
+                    {/* <SubMenu title={<MenuOutlined></MenuOutlined>}>
                         <Menu.Item key="about">
                             <Link to="/about">About</Link>
                         </Menu.Item>
@@ -69,7 +69,7 @@ const Navbar: React.FC<NavbarProps> = ({ selected = "", hideMenu = false}: Navba
                         <Menu.Item key="apply">
                             <Link to="/apply">Apply</Link>
                         </Menu.Item>
-                    </SubMenu>
+                    </SubMenu> */}
                 </Menu>
             }
         </Layout.Header>
