@@ -9,7 +9,7 @@ import SubMenu from 'antd/lib/menu/SubMenu';
 import useWindowSize from "../util/useWindowSize";
 import { Link } from 'react-router-dom';
 const { Option } = Select;
-import './FilterRow.css';
+import '../css/FilterRow.css';
 
 interface FilterRowProps {
     id: number;

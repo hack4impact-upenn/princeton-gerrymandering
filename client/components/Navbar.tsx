@@ -29,7 +29,7 @@ const Navbar: React.FC<NavbarProps> = ({ selected = "", hideMenu = false}: Navba
                 float: "left"
             }}>
                 <Link to = "/">
-                    <h1>Hoeffler Files</h1>
+                    <h1>Hofeller Files</h1>
                     </Link>
             </div>
 
