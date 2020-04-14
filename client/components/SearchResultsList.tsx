@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom'
-import { List, Spin } from 'antd';
+import { List } from 'antd';
 import SearchResultsItem from "../components/SearchResultsItem";
 
 interface Tags {
@@ -8,7 +8,7 @@ interface Tags {
 }
 
 interface Result {
-    id: string;
+    id: number;
     file: string;
     name: string;
     tags: Tags;
@@ -19,14 +19,12 @@ interface Result {
 interface SearchResultsListProps {
     results?: Result[]
     showResults: boolean
-    resultsLoaded: boolean
 };
 
-const SearchResultsList: React.FC<SearchResultsListProps> = ({ results = [], showResults, resultsLoaded}: SearchResultsListProps) => {
+const SearchResultsList: React.FC<SearchResultsListProps> = ({ results = [], showResults}: SearchResultsListProps) => {
 
     const searchResult = showResults ?
     (
-      <Spin size = "large" tip = "Loading..." spinning = {!resultsLoaded}>
       <List
         itemLayout="horizontal"
         size="small"
@@ -41,7 +39,6 @@ const SearchResultsList: React.FC<SearchResultsListProps> = ({ results = [], sho
           <SearchResultsItem item={item}/>
         )}
       />
-      </Spin>
     ) : null;
 
     return searchResult;

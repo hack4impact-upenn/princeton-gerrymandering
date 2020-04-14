@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run build & npm run api",
-    "dev": "npm run api & webpack-dev-server --config=config/webpack.config.js --hot",
+    "start": "npm run dev & npm run api",
+    "dev": "webpack-dev-server --config=config/webpack.config.js --hot",
     "build": "webpack --config=config/webpack.config.js",
     "api": "python3 ./api/main.py"
   },

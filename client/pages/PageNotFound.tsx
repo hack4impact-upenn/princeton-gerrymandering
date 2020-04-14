@@ -4,7 +4,6 @@ import ReactDOM from 'react-dom';
 import { Result, Button } from "antd";
 
 const PageNotFound : React.FC = () => {
-    document.title = "Page Not Found"
     return (
         <Result
             status="404"
