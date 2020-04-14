@@ -22,7 +22,7 @@ def api_index():
                 new_filter = {
                     "bool": {
                         "must": {
-                            "term": {
+                            "match": {
                                 "tags.%s" % filter['attribute'] : filter['value']
                             }
                         }
@@ -46,7 +46,7 @@ def api_index():
 
         if not req['isOr']:
             if filter['filter'] == "contains":
-                new_filter = { "term": {
+                new_filter = { "match": {
                     "tags.%s" % filter['attribute'] : filter['value']
                 }}
                 and_filters.append(new_filter)
