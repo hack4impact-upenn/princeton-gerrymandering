@@ -40,13 +40,13 @@ const SearchResultsItem: React.FC<SearchResultsItemProps> = ({ item }: SearchRes
     };
     const tags: { text: string; color: string; }[] = [];
     Object.keys(item.tags).forEach(element => {
-      item.tags[element].forEach(tag => {
-        if( tagsToShow.includes(element) ){
+      if (tagsToShow.includes(element)) {
+        item.tags[element].forEach(tag => {
           tags.push({
             "text": tag,
             "color": colorMap[element]
-          })
-        }
+          });
+        };
       });
     });
     const tagList = tags.map((tag, index) => (
