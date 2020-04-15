@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom'
 import { List, Avatar, Tag } from 'antd';
 import SearchResultsIcon from "../components/SearchResultsIcon";
-import './SearchResultsItem.css';
+import '../css/SearchResultsItem.css';
 
 interface Tags {
     [propName: string]: string[];
@@ -13,7 +13,7 @@ interface TagsMap {
 }
 
 interface Result {
-    id: number;
+    id: string;
     file: string;
     name: string;
     tags: Tags;
@@ -27,6 +27,8 @@ interface SearchResultsItemProps {
 
 const SearchResultsItem: React.FC<SearchResultsItemProps> = ({ item }: SearchResultsItemProps) => {
 
+    const tagsToShow = ["locations", "people", "orgs"];
+
     const avatarIcon = <SearchResultsIcon filetype={item.type} />;
     const colorMap: TagsMap = {
       "locations": "magenta",
@@ -38,15 +40,17 @@ const SearchResultsItem: React.FC<SearchResultsItemProps> = ({ item }: SearchRes
     };
     const tags: { text: string; color: string; }[] = [];
     Object.keys(item.tags).forEach(element => {
-      item.tags[element].forEach(tag => {
-        tags.push({
-          "text": tag,
-          "color": colorMap[element]
-        })
+      if (tagsToShow.includes(element)) {
+        item.tags[element].forEach(tag => {
+          tags.push({
+            "text": tag,
+            "color": colorMap[element]
+          });
+        };
       });
     });
     const tagList = tags.map((tag, index) => (
-      <Tag key={index} color={tag.color}>{tag.text}</Tag>)
+      <Tag key={index} color={tag.color} style={{margin: "5px !important"}}>{tag.text}</Tag>)
     );
 
     return (
