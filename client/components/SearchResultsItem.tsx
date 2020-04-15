@@ -46,8 +46,8 @@ const SearchResultsItem: React.FC<SearchResultsItemProps> = ({ item }: SearchRes
             "text": tag,
             "color": colorMap[element]
           });
-        };
-      });
+        });
+      };
     });
     const tagList = tags.map((tag, index) => (
       <Tag key={index} color={tag.color} style={{margin: "5px !important"}}>{tag.text}</Tag>)
