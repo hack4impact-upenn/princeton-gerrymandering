@@ -1,9 +1,10 @@
 from flask import Blueprint, request
 from elasticsearch import Elasticsearch
+import certifi
 
 
 api = Blueprint('api', __name__,)
-es = Elasticsearch(['https://search-princeton-gerrymandering-tdoxp3nyeow6asnjm3rufdjf7y.us-east-1.es.amazonaws.com/'])
+es = Elasticsearch(['https://search-princeton-gerrymandering-tdoxp3nyeow6asnjm3rufdjf7y.us-east-1.es.amazonaws.com/'], use_ssl=True, ca_certs=certifi.where())
 
 
 @api.route("/search", methods = ["GET", "POST"])
@@ -12,8 +13,6 @@ def api_index():
     and_filters = []
     and_not_filters = []
     or_filters = []
-
-    # print(req)
 
     for filter in req['filters']:
         if req['isOr']:
@@ -29,7 +28,7 @@ def api_index():
                     }
                 }
                 or_filters.append(new_filter)
-            elif filter['filter'] == "contains_not": 
+            elif filter['filter'] == "contains_not":
                 new_filter = {
                     "bool": {
                         "must_not": {
@@ -74,5 +73,18 @@ def api_index():
         "from": req['pageSize'] * (req['page'] - 1)
     }
     print(query)
+    res = es.search(index="pgp", body=query)
+    return res
+
+
+@api.route("/resource/<string:id>", methods=["GET"])
+def resource(id):
+    query = {
+        "query": {
+            "match": {
+                "_id": id
+            }
+        }
+    }
     res = es.search(index="pgp", body=query)
     return res

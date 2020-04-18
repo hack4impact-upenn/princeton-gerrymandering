@@ -50,7 +50,7 @@ const Home: React.FC = () => {
     const [loaded, setLoaded] = useState(false);
     const [results, setResults] = useState<Result[]>([]);
 
-    const [totalResults, setTotalResults] = useState(0); 
+    const [totalResults, setTotalResults] = useState(0);
     const [pageSize, setPageSize] = useState(5);
     const [page, setPage] = useState(1)
 
@@ -97,7 +97,7 @@ const Home: React.FC = () => {
                     let tagList : string[] = document._source.tags[tag];
                     let tagSet : Set<string> = new Set<string>(tagList);
                     tagList = [...tagSet];
-                    tags[tag] = tagList;
+                    tags[tag] = tagList.slice(0, 8);
                 });
 
                 const newResult : Result = {
@@ -108,9 +108,7 @@ const Home: React.FC = () => {
                     text: document._source.text,
                     type: file_ext
                 }
-
                 results.push(newResult);
-        
             });
             setLoaded(true);
             setResults(results);

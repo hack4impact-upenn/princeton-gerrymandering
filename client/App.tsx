@@ -3,13 +3,15 @@ import {BrowserRouter as Router, Switch, Route, BrowserRouter} from 'react-route
 
 import Home from "./pages/Home";
 import PageNotFound from "./pages/PageNotFound";
+import Resource from "./pages/Resource";
 
 const App : React.FC = () => {
     return (
         <BrowserRouter>
             <Switch>
-                <Route path = "/" exact component = { Home }></Route>
-                <Route path = "/" component = { PageNotFound }></Route>
+                <Route path = "/" exact component = { Home } />
+                <Route path = "/resource/:id" component = { Resource } />
+                <Route path = "/" component = { PageNotFound } />
             </Switch>
         </BrowserRouter>
     )
