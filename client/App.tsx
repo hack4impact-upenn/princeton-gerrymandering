@@ -10,7 +10,7 @@ const App : React.FC = () => {
         <BrowserRouter>
             <Switch>
                 <Route path = "/" exact component = { Home } />
-                <Route path = "/resource/:id" component = { Resource } />
+                <Route path = "/resource/:id" exact component = { Resource } />
                 <Route path = "/" component = { PageNotFound } />
             </Switch>
         </BrowserRouter>

@@ -6,10 +6,12 @@ import { DownloadOutlined } from '@ant-design/icons';
 const { Content, Footer } = Layout;
 import Navbar from "../components/Navbar";
 import SimilarCarousel from "../components/SimilarCarousel";
+import { Redirect } from 'react-router-dom';
 
 import {
   useParams
 } from "react-router-dom";
+import PageNotFound from './PageNotFound';
 
 interface Tags {
     [propName: string]: string[];
@@ -32,7 +34,7 @@ const Resource : React.FC = () => {
     const [resource, setResource] = useState<null|Result>(null);
     const [loading, setLoading] = useState(true);
     let { id } = useParams();
-    const url = `http://localhost:5000/api/resource/${id}`;
+    const url = `/api/resource/${id}`;
 
     useEffect(() => {
       const fetchData = async () => {
@@ -57,12 +59,14 @@ const Resource : React.FC = () => {
               name: result._source.name,
               tags: tags,
               text: result._source.text,
-              type: file_ext
+              type: file_ext,
           }
+          document.title = newResult.name;
           setResource(newResult);
           setLoading(false);
         }
         else {
+          setLoading(false);
           setResource(null);
         }
       };
@@ -112,13 +116,17 @@ const Resource : React.FC = () => {
       );
     }
 
+    if(resource == null && !loading){
+      return <PageNotFound></PageNotFound>
+    }
+
     return (
       <Layout>
           <Navbar></Navbar>
           <Content className="site-layout" style={{ padding: '50px', paddingBottom: 0, marginTop: 64 }}>
             <div className="site-layout-content" style={{ background: "#fff", padding: 24 }}>
               {renderTitle()}
-              <Button type="primary" size="large" icon={<DownloadOutlined />}>Download</Button>
+              <Button type="primary" size="large" href = {`https://princeton-gerrymandering.s3.amazonaws.com/${resource && resource.file}`} icon={<DownloadOutlined />}>Download</Button>
               <h3 style={{ marginTop: 16, marginBottom: 8 }}>Document Tags</h3>
               <List bordered>
                 {renderTags()}

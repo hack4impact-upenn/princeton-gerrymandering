@@ -74,7 +74,7 @@ const Home: React.FC = () => {
     const search = (values : any, page_ : number, pageSize_ : number) => {
         setLoaded(false);
         setShowResults(true);
-        axios.post<PostQuery>("http://localhost:5000/api/search", {
+        axios.post<PostQuery>("/api/search", {
             query,
             filters,
             isOr,
