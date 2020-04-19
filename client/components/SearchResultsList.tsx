@@ -39,7 +39,7 @@ const SearchResultsList: React.FC<SearchResultsListProps> = ({ results = [], sho
             <SearchResultsItem item={item}/>
           )}
         />
-        { resultsLoaded && 
+        { resultsLoaded &&
           <Pagination
             current={page}
             onShowSizeChange = {onPageChange}
@@ -47,7 +47,7 @@ const SearchResultsList: React.FC<SearchResultsListProps> = ({ results = [], sho
             pageSize = {pageSize}
             pageSizeOptions = {['5', '10', '20', '50']}
             style = {{ marginTop: "10px"}}
-            total = {totalResults} 
+            total = {totalResults}
             showSizeChanger
           />
         }

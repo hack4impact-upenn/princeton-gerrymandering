@@ -1,0 +1,34 @@
+.ant-carousel .slick-slide {
+  text-align: center;
+  overflow: hidden;
+}
+
+.slick-slider {
+  margin-left: 40px;
+  margin-right: 40px;
+}
+
+.ant-carousel .slick-slide .ant-card {
+  padding-left: 4px;
+  padding-right: 4px;
+  margin-left: 8px;
+  margin-right: 8px;
+}
+
+.ant-carousel .slick-next {
+  right: -40px;
+}
+
+.ant-carousel .slick-prev {
+  left: -40px;
+}
+
+.ant-carousel .slick-prev, .ant-carousel .slick-next {
+  margin-top: -20px;
+}
+
+
+.slick-arrow {
+  width: 40px !important;
+  height: 40px !important;
+}

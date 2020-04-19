@@ -48,28 +48,19 @@ const FilterModal: React.FC<FilterModalProps> = ({show, onClose, updateFilters, 
       setFilters(tempFilters)
     };
 
-    const filterList = filters.length == 1
-    ? (<FilterRow
-      key={filters[0].id}
-      id={filters[0].id}
-      deleteRow={deleteFilterRow}
-      updateRow={updateFilterRow}
-      index={0}
-      updateIsOr={updateIsOr}
-      isOr={isOr}
-      oneRow
-      />)
-    : filters.map((filter, index) => (
-      <FilterRow
-        key={filter.id}
-        id={filter.id}
-        deleteRow={deleteFilterRow}
-        updateRow={updateFilterRow}
-        index={index}
-        updateIsOr={updateIsOr}
-        isOr={isOr}
-        />
-    ));
+    const filterList = filters.map(
+      (filter, index) => (
+        <FilterRow
+          key={filter.id}
+          id={filter.id}
+          deleteRow={deleteFilterRow}
+          updateRow={updateFilterRow}
+          index={index}
+          updateIsOr={updateIsOr}
+          isOr={isOr}
+          />
+        )
+      );
 
     const handleOk = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
       updateFilters(filters);

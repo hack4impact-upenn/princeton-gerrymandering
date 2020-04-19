@@ -18,11 +18,10 @@ interface FilterRowProps {
     updateRow: (index: number, attribute: string, input:string) => void;
     updateIsOr: (or: boolean) => void;
     isOr: boolean;
-    oneRow?: boolean;
 };
 
 
-const FilterRow: React.FC<FilterRowProps> = ({ id, index, deleteRow, updateRow, updateIsOr, isOr, oneRow=false }: FilterRowProps) => {
+const FilterRow: React.FC<FilterRowProps> = ({ id, index, deleteRow, updateRow, updateIsOr, isOr }: FilterRowProps) => {
     const [attribute, setAttribute] = useState("");
     const [filter, setFilter] = useState("");
     const [value, setValue] = useState("");
@@ -44,14 +43,9 @@ const FilterRow: React.FC<FilterRowProps> = ({ id, index, deleteRow, updateRow, 
 
     const renderAndOr = () => {
       if (index == 0) {
-        if (oneRow) {
-          return null;
-        }
-        else {
-          return (
-            <div style={{ width: 80 }}></div>
-          );
-        }
+        return (
+          <div style={{ width: 80 }}></div>
+        );
       }
       else if (index == 1) {
         const defaultValue = isOr ? "or" : "and";

@@ -59,7 +59,7 @@ const SearchResultsItem: React.FC<SearchResultsItemProps> = ({ item }: SearchRes
       >
         <List.Item.Meta
           avatar={<Avatar size={64} style={{ textAlign: "center" }} shape="square" icon={avatarIcon} />}
-          title={<a href={item.file}>{item.name}</a>}
+          title={<a href={`resource/${item.id}`}>{item.name}</a>}
           description={tagList}
         />
       </List.Item>
