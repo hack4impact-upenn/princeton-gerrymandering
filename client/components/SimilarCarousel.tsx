@@ -4,19 +4,7 @@ import { Carousel, Button } from 'antd';
 import SimilarCarouselItem from "../components/SimilarCarouselItem";
 import '../css/SimilarCarousel.css';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
-
-interface Tags {
-    [propName: string]: string[];
-}
-
-interface Result {
-    id: string;
-    file: string;
-    name: string;
-    tags: Tags;
-    text: string;
-    type: string;
-}
+import { Result, Tags } from "../types/interfaces"
 
 const SimilarCarousel: React.FC = () => {
 

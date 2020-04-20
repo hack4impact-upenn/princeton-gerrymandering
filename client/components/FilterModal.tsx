@@ -9,14 +9,7 @@ import SubMenu from 'antd/lib/menu/SubMenu';
 
 import useWindowSize from "../util/useWindowSize";
 import { Link } from 'react-router-dom';
-
-interface Filter {
-    attribute: string;
-    filter: string;
-    value: string;
-    id: number;
-    [propName: string] :any;
-};
+import { Filter } from "../types/interfaces"
 
 interface FilterModalProps {
     onClose: () => void;

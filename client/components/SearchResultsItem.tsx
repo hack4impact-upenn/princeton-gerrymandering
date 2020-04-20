@@ -3,23 +3,7 @@ import ReactDOM from 'react-dom'
 import { List, Avatar, Tag } from 'antd';
 import SearchResultsIcon from "../components/SearchResultsIcon";
 import '../css/SearchResultsItem.css';
-
-interface Tags {
-    [propName: string]: string[];
-}
-
-interface TagsMap {
-    [propName: string]: string;
-}
-
-interface Result {
-    id: string;
-    file: string;
-    name: string;
-    tags: Tags;
-    text: string;
-    type: string;
-}
+import { Result, Tags, TagsMap } from "../types/interfaces"
 
 interface SearchResultsItemProps {
     item: Result;

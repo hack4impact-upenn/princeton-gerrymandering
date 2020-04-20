@@ -69,7 +69,7 @@ const FilterRow: React.FC<FilterRowProps> = ({ id, index, deleteRow, updateRow, 
     }
 
     return (
-      <Space style={{ width: '100%', marginBottom:8}}>
+      <Space style={{ width: '100%', marginBottom: 8 }}>
         {renderAndOr()}
         <Select
           showSearch

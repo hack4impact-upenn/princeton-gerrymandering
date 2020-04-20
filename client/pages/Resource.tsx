@@ -6,32 +6,18 @@ import { DownloadOutlined } from '@ant-design/icons';
 const { Content, Footer } = Layout;
 import Navbar from "../components/Navbar";
 import SimilarCarousel from "../components/SimilarCarousel";
+import FileViewer from "../components/FileViewer";
 import { Redirect } from 'react-router-dom';
+import { Result, Tags, TagsMap } from "../types/interfaces"
 
 import {
   useParams
 } from "react-router-dom";
 import PageNotFound from './PageNotFound';
 
-interface Tags {
-    [propName: string]: string[];
-}
-
-interface TagsMap {
-    [propName: string]: string;
-}
-
-interface Result {
-    id: string;
-    file: string;
-    name: string;
-    tags: Tags;
-    text: string;
-    type: string;
-}
 
 const Resource : React.FC = () => {
-    const [resource, setResource] = useState<null|Result>(null);
+    const [resource, setResource] = useState<undefined|Result>(undefined);
     const [loading, setLoading] = useState(true);
     let { id } = useParams();
     const url = `/api/resource/${id}`;
@@ -67,7 +53,7 @@ const Resource : React.FC = () => {
         }
         else {
           setLoading(false);
-          setResource(null);
+          setResource(undefined);
         }
       };
       fetchData();
@@ -78,7 +64,8 @@ const Resource : React.FC = () => {
         resource && resource.name && <h1>{resource.name}</h1>
       )
     }
-    const renderTagsItem = (tagName: string, color: string) => {
+
+    const renderTags = (tagName: string, color: string) => {
         const tagsList = resource && resource.tags && resource.tags[tagName] ? resource.tags[tagName] : [];
         const tags: { text: string; color: string; }[] = [];
         tagsList.forEach(tag => {
@@ -96,8 +83,7 @@ const Resource : React.FC = () => {
         );
     }
 
-    const renderTags = () => {
-      const tagsToShow = ["locations", "people", "orgs"];
+    const renderTagsListItem = (tag: string) => {
       const colorMap: TagsMap = {
         "locations": "magenta",
         "orgs": "orange",
@@ -105,18 +91,37 @@ const Resource : React.FC = () => {
         "time": "geekblue",
         "people": "purple",
       };
+      if (resource && resource.tags && resource.tags[tag] && resource.tags[tag].length > 0) {
+        return (<List.Item key={tag}>
+          <List.Item.Meta title={tag[0].toUpperCase() + tag.slice(1)} description={renderTags(tag, colorMap[tag])} />
+        </List.Item>)
+      }
+      return null;
+    }
+
+    const renderTagsList = () => {
+      const tagsToShow = ["locations", "people", "orgs"];
+      const isFalsy = (elt: any) => elt.length == 0;
+      const entries = resource && resource.tags && Object.entries(resource.tags) ? Object.entries(resource.tags).map(x => x[1]) : [];
+      const noTags = entries.every(isFalsy);
+      if (noTags) {
+        return null;
+      }
       return (
-        tagsToShow.map(
-          tag => (
-            <List.Item key={tag}>
-              <List.Item.Meta title={tag.toUpperCase()} description={renderTagsItem(tag, colorMap[tag])} />
-            </List.Item>
-          )
-        )
+        <React.Fragment>
+          <h3 style={{ marginTop: 16, marginBottom: 8 }}>Document Tags</h3>
+          <List bordered>
+            {tagsToShow.map(
+              tag => (
+                renderTagsListItem(tag)
+              )
+            )}
+          </List>
+        </React.Fragment>
       );
     }
 
-    if(resource == null && !loading){
+    if (resource == null && !loading){
       return <PageNotFound></PageNotFound>
     }
 
@@ -127,10 +132,8 @@ const Resource : React.FC = () => {
             <div className="site-layout-content" style={{ background: "#fff", padding: 24 }}>
               {renderTitle()}
               <Button type="primary" size="large" href = {`https://princeton-gerrymandering.s3.amazonaws.com/${resource && resource.file}`} icon={<DownloadOutlined />}>Download</Button>
-              <h3 style={{ marginTop: 16, marginBottom: 8 }}>Document Tags</h3>
-              <List bordered>
-                {renderTags()}
-              </List>
+                {renderTagsList()}
+              <FileViewer type={resource && resource.type} link={`https://princeton-gerrymandering.s3.amazonaws.com/${resource && resource.file}`}/>
               <h3 style={{ marginTop: 16, marginBottom: 8 }}>Similar Resources</h3>
               <SimilarCarousel/>
             </div>
