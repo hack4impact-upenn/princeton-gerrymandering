@@ -157,6 +157,13 @@ const Home: React.FC = () => {
                 <FilterModal show={isModalShowing} onClose={closeModal} updateFilters={updateFilters} updateIsOr={updateIsOr} isOr={isOr}/>
                 <SearchResultsList pageSize = {pageSize} page = {page} showResults={showResults} results={results} resultsLoaded = {loaded} onPageChange = {onPageChange} totalResults = {totalResults}></SearchResultsList>
               </div>
+              <div className="site-layout-content" style={{ background: "#fff", padding: 24 }}>
+                <h4>About the Hofeller Files</h4>
+                <p>More than a year after his death, a cache of computer files saved on the hard drives of Thomas Hofeller, a prominent Republican redistricting strategist, became public.
+                  These files contained copies of maps, spreadsheets, and other documents, which have been cited as evidence of gerrymandering that got political maps thrown out in North Carolina.</p>
+                <p>This project organizes them. (Not sure what to say so please change as you want)</p>
+                <p>Source: NPR</p>
+              </div>
             </Content>
             <Footer style={{ textAlign: 'center' }}>The Hofeller Files</Footer>
         </Layout>
