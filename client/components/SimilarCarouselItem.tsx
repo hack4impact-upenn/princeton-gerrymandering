@@ -3,19 +3,8 @@ import ReactDOM from 'react-dom';
 import Link from "react-router";
 import { Carousel, Card, Avatar } from 'antd';
 import SearchResultsIcon from "../components/SearchResultsIcon";
+import { Result, Tags } from "../types/interfaces"
 
-interface Tags {
-    [propName: string]: string[];
-}
-
-interface Result {
-    id: string;
-    file: string;
-    name: string;
-    tags: Tags;
-    text: string;
-    type: string;
-}
 
 interface SimilarCarouselItemProps {
     resource: Result

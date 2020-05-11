@@ -21,6 +21,7 @@
     "dayjs": "^1.8.24",
     "dotenv": "^8.2.0",
     "less": "^3.11.1",
+    "pdf-viewer-reactjs": "^2.0.6",
     "pycollections": "^0.9.0",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",

@@ -11,25 +11,7 @@ import Navbar from "../components/Navbar";
 import FilterModal from "../components/FilterModal";
 import SearchResultsList from "../components/SearchResultsList";
 import Banner from "../assets/banner.svg";
-
-interface Filter {
-    attribute: string;
-    filter: string;
-    value: string;
-}
-
-interface Tags {
-    [propName: string]: string[];
-}
-
-interface Result {
-    id: string;
-    file: string;
-    name: string;
-    tags: Tags;
-    text: string;
-    type: string;
-}
+import { Result, Tags, Filter } from "../types/interfaces.d.ts"
 
 interface PostQuery {
     query: string;
@@ -38,6 +20,7 @@ interface PostQuery {
     page: number;
     pageSize: number;
 }
+
 
 const Home: React.FC = () => {
     document.title = "The Hofeller Files"
@@ -53,23 +36,6 @@ const Home: React.FC = () => {
     const [totalResults, setTotalResults] = useState(0);
     const [pageSize, setPageSize] = useState(5);
     const [page, setPage] = useState(1)
-
-    // const listData = [];
-    // for (let i = 0; i < 11; i++) {
-    //   listData.push({
-    //     id: i.toString(),
-    //     file: 'test-data/2002 Districts 2010.xlsx',
-    //     name: "2002 Districts 2010.xlsx",
-    //     tags: {
-    //       "locations": ["Arizona", "Bushwick", "California"],
-    //       "orgs": ["RNC", "GOP", "DNC"],
-    //       "groups": ["Latinos", "Asians"],
-    //       "time": ["2002", "2020"]
-    //     },
-    //     text: "Ant Design, a design language for background applications, is refined by Ant UED Team.",
-    //     type: "xlsx"
-    //   });
-    // }
 
     const search = (values : any, page_ : number, pageSize_ : number) => {
         setLoaded(false);

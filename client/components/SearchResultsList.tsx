@@ -2,19 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom'
 import { List, Spin, Pagination } from 'antd';
 import SearchResultsItem from "../components/SearchResultsItem";
-
-interface Tags {
-    [propName: string]: string[];
-}
-
-interface Result {
-    id: string;
-    file: string;
-    name: string;
-    tags: Tags;
-    text: string;
-    type: string;
-}
+import { Result, Tags } from "../types/interfaces"
 
 interface SearchResultsListProps {
     results?: Result[]
