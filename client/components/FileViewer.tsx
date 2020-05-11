@@ -10,9 +10,9 @@ interface FileViewerProps {
 const FileViewer: React.FC<FileViewerProps> = ({ type, link }: FileViewerProps) => {
     const microsoftPath = `https://view.officeapps.live.com/op/embed.aspx?src=${link}`;
     const viewer = (type == "xlsx" || type == "xlsm")
-    ? (<iframe src={microsoftPath} width='100%' height='720px'/>)
+    ? (<iframe src={microsoftPath} width='100%' height='540px'/>)
     : (type == "doc" || type == "docx")
-    ? (<iframe src={microsoftPath} width='100%' height='720px'/>)
+    ? (<iframe src={microsoftPath} width='100%' height='540px'/>)
     : (type == "pdf")
     ? (<embed src={link} type="application/pdf" width="100%" height="720px" />)
     : null;
@@ -20,7 +20,6 @@ const FileViewer: React.FC<FileViewerProps> = ({ type, link }: FileViewerProps) 
     if (viewer) {
       return (
         <React.Fragment>
-          <h3 style={{ marginTop: 16, marginBottom: 8 }}>File Preview</h3>
           {viewer}
         </React.Fragment>
       );

@@ -5,7 +5,9 @@ import os
 
 app = Flask(__name__, static_folder='../client/dist', static_url_path='/static/')
 CORS(app)
+
 app.register_blueprint(api, url_prefix = "/api")
+
 
 @app.route('/', defaults={'upath': ''})
 @app.route('/<path:upath>')
