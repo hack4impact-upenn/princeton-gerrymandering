@@ -10,8 +10,9 @@ import { FilterOutlined } from "@ant-design/icons";
 import Navbar from "../components/Navbar";
 import FilterModal from "../components/FilterModal";
 import SearchResultsList from "../components/SearchResultsList";
+import FilterList from "../components/FilterList";
 import Banner from "../assets/banner.svg";
-import { Result, Tags, Filter } from "../types/interfaces.d.ts"
+import { Result, Tags, Filter } from "../types/interfaces"
 
 interface PostQuery {
     query: string;
@@ -120,7 +121,8 @@ const Home: React.FC = () => {
               <div className="site-layout-content" style={{ background: "#fff", padding: 24 }}>
                 <Search placeholder="Search for files..." onSearch={(values) => search(values, page, pageSize)} onChange={(e) => setQuery(e.target.value)} size="large" enterButton />
                 <Button type="link" style={{ padding: "10px 10px 10px 0" }} onClick={() => setModalShowing(true)}><FilterOutlined></FilterOutlined>Filter Results</Button>
-                <FilterModal show={isModalShowing} onClose={closeModal} updateFilters={updateFilters} updateIsOr={updateIsOr} isOr={isOr}/>
+                <FilterList filters = {filters} updateFilters = {updateFilters}></FilterList>
+                <FilterModal filters = {filters} show={isModalShowing} onClose={closeModal} updateFilters={updateFilters} updateIsOr={updateIsOr} isOr={isOr}/>
                 <SearchResultsList pageSize = {pageSize} page = {page} showResults={showResults} results={results} resultsLoaded = {loaded} onPageChange = {onPageChange} totalResults = {totalResults}></SearchResultsList>
               </div>
             </Content>

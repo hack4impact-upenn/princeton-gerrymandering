@@ -17,16 +17,16 @@ interface FilterModalProps {
     updateFilters: (filters: Array<Filter>) => void;
     updateIsOr: (or: boolean) => void;
     isOr: boolean;
+    filters: Array<Filter>
 };
 
 var id = 0;
 
-const FilterModal: React.FC<FilterModalProps> = ({show, onClose, updateFilters, updateIsOr, isOr}: FilterModalProps) => {
-    const [filters, setFilters] = useState<Filter[]>([]);
+const FilterModal: React.FC<FilterModalProps> = ({filters, show, onClose, updateFilters, updateIsOr, isOr}: FilterModalProps) => {
     const [isAnd, setIsAnd] = useState(false);
 
     const deleteFilterRow = (index: number) => {
-      setFilters(filters.filter(x => x.id != index))
+        updateFilters(filters.filter(x => x.id != index))
     }
 
     const updateFilterRow = (index: number, attribute: string, input: string) => {
@@ -38,7 +38,7 @@ const FilterModal: React.FC<FilterModalProps> = ({show, onClose, updateFilters, 
           return x;
         }
       );
-      setFilters(tempFilters)
+      updateFilters(tempFilters)
     };
 
     const filterList = filters.map(
@@ -67,7 +67,7 @@ const FilterModal: React.FC<FilterModalProps> = ({show, onClose, updateFilters, 
         "value": "",
         "id": id++
       }
-      setFilters([...filters, newFilter]);
+      updateFilters([...filters, newFilter]);
     }
 
     const renderButton = () => {
