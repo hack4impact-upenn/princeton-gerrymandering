@@ -22,6 +22,7 @@ module.exports = {
         watchContentBase: true,
         proxy: {
             '/api': 'http://localhost:5000',
+            '/auth': 'http://localhost:5000',
         },
         historyApiFallback: {
             index: 'index.html'
