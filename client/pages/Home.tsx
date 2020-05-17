@@ -11,7 +11,7 @@ import Navbar from "../components/Navbar";
 import FilterModal from "../components/FilterModal";
 import SearchResultsList from "../components/SearchResultsList";
 import Banner from "../assets/banner.svg";
-import { Result, Tags, Filter } from "../types/interfaces.d.ts"
+import { Result, Tags, Filter } from "../types/interfaces"
 
 interface PostQuery {
     query: string;
@@ -40,6 +40,7 @@ const Home: React.FC = () => {
     const search = (values : any, page_ : number, pageSize_ : number) => {
         setLoaded(false);
         setShowResults(true);
+        setPage(1);
         axios.post<PostQuery>("/api/search", {
             query,
             filters,
