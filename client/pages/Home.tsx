@@ -40,7 +40,6 @@ const Home: React.FC = () => {
     const search = (values : any, page_ : number, pageSize_ : number) => {
         setLoaded(false);
         setShowResults(true);
-        setPage(1);
         axios.post<PostQuery>("/api/search", {
             query,
             filters,
