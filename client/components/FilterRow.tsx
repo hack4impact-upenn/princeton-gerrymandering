@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom'
 
-import { Layout, Menu, Modal, Select, Input, Button, Space } from 'antd';
+import { Layout, Menu, Modal, Select, Input, Button, Space, AutoComplete } from 'antd';
 import Icon, { CloseOutlined } from '@ant-design/icons';
 
 import SubMenu from 'antd/lib/menu/SubMenu';
@@ -10,6 +10,13 @@ import useWindowSize from "../util/useWindowSize";
 import { Link } from 'react-router-dom';
 const { Option } = Select;
 import '../css/FilterRow.css';
+
+import axios, { AxiosResponse, AxiosError } from 'axios';
+
+interface SuggestedTagsQuery {
+    type: string;
+    query: string;
+}
 
 interface FilterRowProps {
     id: number;
@@ -26,6 +33,8 @@ const FilterRow: React.FC<FilterRowProps> = ({ id, index, deleteRow, updateRow, 
     const [filter, setFilter] = useState("");
     const [value, setValue] = useState("");
 
+    const [suggestedTags, setSuggestedTags] = useState<{value: string}[]>([]);
+
     const updateAttribute = (attribute: string) => {
         setAttribute(attribute);
         updateRow(id, "attribute", attribute);
@@ -38,6 +47,15 @@ const FilterRow: React.FC<FilterRowProps> = ({ id, index, deleteRow, updateRow, 
 
     const updateValue = (value: string) => {
         setValue(value);
+        axios.post<SuggestedTagsQuery>("api/suggested_tags", {
+            type: attribute,
+            query: value
+        }).then((res) => {
+            const data = res as any;
+            setSuggestedTags(data.data.tags.map( (tag) => ({value: tag})))
+        }).catch((err) => {
+            console.log(err)
+        })
         updateRow(id, "value", value);
     }
 
@@ -99,7 +117,7 @@ const FilterRow: React.FC<FilterRowProps> = ({ id, index, deleteRow, updateRow, 
           <Option value="empty">Is empty</Option>
           <Option value="empty_not">Is not empty</Option> */}
         </Select>
-        <Input placeholder="Value" onChange={(e) => updateValue(e.target.value)} style={{ width: '100%' }}/>
+        <AutoComplete placeholder = "Value" style={{ width: '100%' }} onSearch = {updateValue} onSelect = {updateValue} options = {suggestedTags}></AutoComplete>
         <Button type="primary" icon={<CloseOutlined />} onClick={(e) => deleteRow(id)}/>
       </Space>
     );
