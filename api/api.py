@@ -37,6 +37,7 @@ def api_index():
                 print("Unsupported filter type %s" % filter['filter'])
 
     query = generate_query(req, and_filters, and_not_filters, or_filters)
+    print(query)
     res = es.search(index="pgp", body=query)
     return res
 
@@ -61,7 +62,7 @@ def suggested_tags():
         "query": {
             "prefix": {
                 "tags.%s" % req["type"]: {
-                    "value": req["query"]
+                    "value": req["query"].lower()
                 }
             }
         },
@@ -76,6 +77,8 @@ def suggested_tags():
         "size": 0
     }
 
+    print(query)
+
     res = es.search(index="pgp", body=query)
     buckets = res["aggregations"]["suggested_tags"]["buckets"]
     all_tags = [bucket["key"] for bucket in buckets]
@@ -88,8 +91,8 @@ def or_contains_filter(filter):
     return {
         "bool": {
             "must": {
-                "match": {
-                    "tags.%s" % filter['attribute']: filter['value']
+                "term": {
+                    "tags.%s.keyword" % filter['attribute']: filter['value']
                 }
             }
         }
@@ -100,8 +103,8 @@ def or_not_contains_filter(filter):
     return {
         "bool": {
             "must_not": {
-                "match": {
-                    "tags.%s" % filter['attribute']: filter['value']
+                "term": {
+                    "tags.%s.keyword" % filter['attribute']: filter['value']
                 }
             }
         }
@@ -110,8 +113,8 @@ def or_not_contains_filter(filter):
 
 def and_filter(filter):
     return {
-        "match": {
-            "tags.%s" % filter['attribute']: filter['value']
+        "term": {
+            "tags.%s.keyword" % filter['attribute']: filter['value']
         }
     }
 

@@ -37,9 +37,8 @@ const Home: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
         page_param = params.page == undefined ? 1 : parseInt(params.page as string);
         page_size_param = params.pageSize == undefined ? 5 : parseInt(params.pageSize as string);
     } catch {
-        
-    }
 
+    }
 
     document.title = "The Hofeller Files"
 
@@ -142,7 +141,6 @@ const Home: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
 
     // Want to make it only load the ones needed instead of all for performance
     const onPageChange = (newPage: number, newPageSize: number | undefined) => {
-        console.log(newPageSize);
         setPage(newPage);
         if (typeof newPageSize !== undefined) {
             setPageSize(newPageSize || 10);
