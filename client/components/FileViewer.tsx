@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import GeoJSONViewer from './GeoJSONViewer';
 import { Result } from '../types/interfaces';
 import { Empty } from 'antd';
+import ZipFileViewer from './ZipFileViewer';
 
 interface FileViewerProps {
   resource: Result | undefined
@@ -24,6 +25,8 @@ const FileViewer: React.FC<FileViewerProps> = ({ resource }: FileViewerProps) =>
           ? (<embed src={link} type="application/pdf" width="100%" height="720px" />)
           : (type == "shapefile" && resource.geojson != undefined)
             ? (<GeoJSONViewer source={resource!.geojson}></GeoJSONViewer>)
+            : (type == "zip") 
+            ? (<ZipFileViewer data = { JSON.parse(resource!.text) }></ZipFileViewer>)
             : <Empty description = {"No File Preview Available"}></Empty>;
   }
 
