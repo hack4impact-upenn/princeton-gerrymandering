@@ -30,7 +30,6 @@ const Resource: React.FC = () => {
             const result = data.hits.hits[0];
             if (result) {
                 const filename = result._source.path;
-                const file_ext = filename.split(".").slice(-1)[0]
 
                 const tags: Tags = {}
                 Object.keys(result._source.tags).forEach((tag: string) => {
@@ -46,8 +45,13 @@ const Resource: React.FC = () => {
                     name: result._source.name,
                     tags: tags,
                     text: result._source.text,
-                    type: file_ext,
+                    type: result._source.filetype,
                 }
+
+                if(result._source.filetype == "shapefile"){
+                    newResult.geojson = result._source.geojson
+                }
+
                 document.title = newResult.name;
                 setResource(newResult);
                 setLoading(false);
@@ -64,7 +68,7 @@ const Resource: React.FC = () => {
         return (
             resource && resource.name && 
                 <PageHeader onBack = { () => history.back() }style = {{ padding: 0 }} title = {resource.name} extra = {[
-                    <Button type="primary" size="large" href={`https://princeton-gerrymandering.s3.amazonaws.com/${resource && resource.file}`} icon={<DownloadOutlined />}>Download</Button>
+                    <Button key = {1} type="primary" size="large" href={`https://princeton-gerrymandering.s3.amazonaws.com/${resource && resource.file}`} icon={<DownloadOutlined />}>Download</Button>
                 ]}></PageHeader>
         )
     }
@@ -93,7 +97,7 @@ const Resource: React.FC = () => {
             "orgs": "orange",
             "groups": "green",
             "time": "geekblue",
-            "people": "purple",
+            "people": "purple"
         };
 
         const displayTags : TagsMap = {
@@ -101,7 +105,7 @@ const Resource: React.FC = () => {
             "orgs": "Organizations",
             "groups": "Groups",
             "time": "Dates and Times",
-            "people": "People"
+            "people": "People",
         }
 
         if (resource && resource.tags && resource.tags[tag] && resource.tags[tag].length > 0) {
@@ -148,7 +152,7 @@ const Resource: React.FC = () => {
                     <Divider style = {{ fontSize: 18, marginTop: 40 }}>Document Tags</Divider>
                         {renderTagsList()}
                     <Divider style = {{ fontSize: 18, marginTop: 40 }}>File Preview</Divider>
-                    <FileViewer type={resource && resource.type} link={`https://princeton-gerrymandering.s3.amazonaws.com/${resource && resource.file}`} />
+                    <FileViewer resource = {resource}></FileViewer>
                     <Divider style = {{ fontSize: 18, marginTop: 40 }} >Similar Files</Divider>
                     <SimilarCarousel />
                 </div>
