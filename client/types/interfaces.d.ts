@@ -13,6 +13,7 @@ export interface Result {
     tags: Tags;
     text: string;
     type: string;
+    geojson?: GeoJSON;
 };
 
 export interface Filter {
