@@ -77,8 +77,6 @@ def suggested_tags():
         "size": 0
     }
 
-    print(query)
-
     res = es.search(index="pgp", body=query)
     buckets = res["aggregations"]["suggested_tags"]["buckets"]
     all_tags = [bucket["key"] for bucket in buckets]
