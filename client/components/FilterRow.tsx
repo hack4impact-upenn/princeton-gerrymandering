@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom'
 
-import { Layout, Menu, Modal, Select, Input, Button, Space } from 'antd';
+import { Layout, Menu, Modal, Select, Input, Button, Space, AutoComplete } from 'antd';
 import Icon, { CloseOutlined } from '@ant-design/icons';
 
 import SubMenu from 'antd/lib/menu/SubMenu';
@@ -10,98 +10,143 @@ import useWindowSize from "../util/useWindowSize";
 import { Link } from 'react-router-dom';
 const { Option } = Select;
 import '../css/FilterRow.css';
+import { Filter } from "../types/interfaces"
+
+import axios, { AxiosResponse, AxiosError } from 'axios';
+
+interface SuggestedTagsQuery {
+    type: string;
+    query: string;
+}
 
 interface FilterRowProps {
-    id: number;
+    filters: Filter[]
     index: number;
-    deleteRow: (index: number) => void;
-    updateRow: (index: number, attribute: string, input:string) => void;
-    updateIsOr: (or: boolean) => void;
-    isOr: boolean;
+    updateFilters: (filters: Filter[]) => void;
+    updateIsOr: (isOr: boolean) => void;
+    isOr: boolean
 };
 
 
-const FilterRow: React.FC<FilterRowProps> = ({ id, index, deleteRow, updateRow, updateIsOr, isOr }: FilterRowProps) => {
+const FilterRow: React.FC<FilterRowProps> = ({ filters, index, updateFilters, updateIsOr, isOr }: FilterRowProps) => {
     const [attribute, setAttribute] = useState("");
     const [filter, setFilter] = useState("");
     const [value, setValue] = useState("");
 
+    const [suggestedTags, setSuggestedTags] = useState<{ value: string }[]>([]);
+
+    // updateFilters( filters.map( (filter, ind) => {
+    //     if(index == ind){
+    //         return {
+    //             ...filter,
+    //             filter:
+    //         }
+    //     } else {
+    //         return filter;
+    //     }
+    // })
+
+    const updateProperty = (attribute: string, input: string) => {
+        updateFilters(filters.map( (filter, ind) => {
+            if (ind == index) {
+                filter[attribute] = input;
+            }
+            return filter;
+        }
+        ))
+    };
+
     const updateAttribute = (attribute: string) => {
         setAttribute(attribute);
-        updateRow(id, "attribute", attribute);
+        updateProperty("attribute", attribute);
     }
 
     const updateFilter = (filter: string) => {
         setFilter(filter);
-        updateRow(id, "filter", filter);
+        updateProperty("filter", filter);
     }
 
     const updateValue = (value: string) => {
         setValue(value);
-        updateRow(id, "value", value);
+        axios.post<SuggestedTagsQuery>("api/suggested_tags", {
+            type: attribute,
+            query: value
+        }).then((res) => {
+            const data = res as any;
+            setSuggestedTags(data.data.tags.map((tag) => ({ value: tag })))
+        }).catch((err) => {
+            console.log(err)
+        })
+        updateProperty("value", value);
+    }
+
+    const deleteRow = () => {
+        updateFilters( filters.filter( (filter, ind) => ind != index ) )
     }
 
     const renderAndOr = () => {
-      if (index == 0) {
-        return (
-          <div style={{ width: 80 }}></div>
-        );
-      }
-      else if (index == 1) {
-        const defaultValue = isOr ? "or" : "and";
-        return (
-          <Select
-            onChange={(e) => updateIsOr( e.toString() === "or" )}
-            style={{ width: 80 }}
-            defaultValue={defaultValue}
-          >
-            <Option value="and">And</Option>
-            <Option value="or">Or</Option>
-          </Select>
-        );
-      }
-      else {
-        const text = isOr ? "Or" : "And";
-        return (
-          <div style={{ width: 80, paddingLeft: 12 }}>{text}</div>
-        );
-      }
+        if (index == 0) {
+            return (
+                <div style={{ width: 80 }}></div>
+            );
+        }
+        else if (index == 1) {
+            const defaultValue = isOr ? "or" : "and";
+            return (
+                <Select
+                    onChange={(e) => updateIsOr(e.toString() === "or")}
+                    style={{ width: 80 }}
+                    defaultValue={defaultValue}
+                >
+                    <Option value="and">And</Option>
+                    <Option value="or">Or</Option>
+                </Select>
+            );
+        }
+        else {
+            const text = isOr ? "Or" : "And";
+            return (
+                <div style={{ width: 80, paddingLeft: 12 }}>{text}</div>
+            );
+        }
     }
 
     return (
-      <Space style={{ width: '100%', marginBottom: 8 }}>
-        {renderAndOr()}
-        <Select
-          showSearch
-          placeholder="Select an attribute"
-          optionFilterProp="children"
-          filterOption={(input, option) =>
-            option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-          onChange={(e) => updateAttribute(e.toString())}
-          style={{ minWidth: 168 }}
-        >
-          <Option value="locations">Locations</Option>
-          <Option value="people">People</Option>
-          <Option value="orgs">Organizations</Option>
-        </Select>
-        <Select
-          placeholder="Select a filter"
-          onChange={(e) => updateFilter(e.toString())}
-          style={{ minWidth: 168 }}
-        >
-          {/* <Option value="is">Is</Option>
+        <Space style={{ width: '100%', marginBottom: 8 }}>
+            {renderAndOr()}
+            <Select
+                showSearch
+                placeholder="Select an attribute"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                    option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+                onChange={(e) => updateAttribute(e.toString())}
+                style={{ minWidth: 168 }}
+                value={ filters[index].attribute }
+            >
+                <Option value="locations">Locations</Option>
+                <Option value="people">People</Option>
+                <Option value="orgs">Organizations</Option>
+            </Select>
+            <Select
+                placeholder="Select a filter"
+                onChange={(e) => updateFilter(e.toString())}
+                style={{ minWidth: 168 }}
+                value = {filters[index].filter }
+            >
+                {/* <Option value="is">Is</Option>
           <Option value="is_not">Is not</Option> */}
-          <Option value="contains">Contains</Option>
-          <Option value="contains_not">Does not contain</Option>
-          {/* <Option value="starts_with">Starts with</Option>
+                <Option value="contains">Contains</Option>
+                <Option value="contains_not">Does not contain</Option>
+                {/* <Option value="starts_with">Starts with</Option>
           <Option value="ends_with">Ends with</Option>
           <Option value="empty">Is empty</Option>
           <Option value="empty_not">Is not empty</Option> */}
-        </Select>
-        <Input placeholder="Value" onChange={(e) => updateValue(e.target.value)} style={{ width: '100%' }}/>
-        <Button type="primary" icon={<CloseOutlined />} onClick={(e) => deleteRow(id)}/>
-      </Space>
+            </Select>
+            <AutoComplete defaultValue = {filters[index].value} placeholder="Value" style={{ width: '100%' }} onSearch={updateValue} onSelect={updateValue} options={suggestedTags}></AutoComplete>
+            <Button type="primary" icon={<CloseOutlined />} onClick={(e) => deleteRow()} />
+        </Space>
     );
 }
 

@@ -25,6 +25,7 @@
     "ol": "^6.3.1",
     "pdf-viewer-reactjs": "^2.0.6",
     "pycollections": "^0.9.0",
+    "query-string": "^6.12.1",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
     "react-router-dom": "^5.1.2",

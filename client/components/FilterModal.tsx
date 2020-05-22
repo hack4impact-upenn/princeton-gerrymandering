@@ -17,87 +17,86 @@ interface FilterModalProps {
     updateFilters: (filters: Array<Filter>) => void;
     updateIsOr: (or: boolean) => void;
     isOr: boolean;
+    filters: Array<Filter>
 };
 
 var id = 0;
 
-const FilterModal: React.FC<FilterModalProps> = ({show, onClose, updateFilters, updateIsOr, isOr}: FilterModalProps) => {
-    const [filters, setFilters] = useState<Filter[]>([]);
+const FilterModal: React.FC<FilterModalProps> = ({ filters, show, onClose, updateFilters, updateIsOr, isOr }: FilterModalProps) => {
     const [isAnd, setIsAnd] = useState(false);
 
     const deleteFilterRow = (index: number) => {
-      setFilters(filters.filter(x => x.id != index))
+        updateFilters(filters.filter(x => x.id != index))
     }
 
     const updateFilterRow = (index: number, attribute: string, input: string) => {
-      const tempFilters = filters.map(
-        function(x) {
-          if (x.id == index) {
-            x[attribute]=input;
-          }
-          return x;
-        }
-      );
-      setFilters(tempFilters)
+        const tempFilters = filters.map(
+            function (x) {
+                if (x.id == index) {
+                    x[attribute] = input;
+                }
+                return x;
+            }
+        );
+        updateFilters(tempFilters)
     };
 
     const filterList = filters.map(
-      (filter, index) => (
-        <FilterRow
-          key={filter.id}
-          id={filter.id}
-          deleteRow={deleteFilterRow}
-          updateRow={updateFilterRow}
-          index={index}
-          updateIsOr={updateIsOr}
-          isOr={isOr}
-          />
+        (filter, index) => (
+            <FilterRow
+                key={filter.id}
+                updateFilters={updateFilters}
+                filters={filters}
+                index={index}
+                updateIsOr={updateIsOr}
+                isOr={isOr}
+            />
         )
-      );
+    );
 
     const handleOk = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-      updateFilters(filters);
-      onClose();
+        updateFilters(filters);
+        onClose();
     };
 
     const addFilterRow = () => {
-      const newFilter = {
-        "attribute": "",
-        "filter": "",
-        "value": "",
-        "id": id++
-      }
-      setFilters([...filters, newFilter]);
+        const newFilter = {
+            "attribute": "",
+            "filter": "",
+            "value": "",
+            "id": id++
+        }
+        updateFilters([...filters, newFilter]);
     }
 
     const renderButton = () => {
-      if (filters.length >= 5) {
-        return (
-          <Button onClick={addFilterRow} block disabled>
-            Maximum 5 Filters
-          </Button>
-        );
-      }
-      else {
-        return (
-          <Button icon={<PlusOutlined />} onClick={addFilterRow} block>
-            Add a filter
-          </Button>
-        );
-      }
+        if (filters.length >= 5) {
+            return (
+                <Button onClick={addFilterRow} block disabled>
+                    Maximum 5 Filters
+                </Button>
+            );
+        }
+        else {
+            return (
+                <Button icon={<PlusOutlined />} onClick={addFilterRow} block>
+                    Add a filter
+                </Button>
+            );
+        }
     }
 
     return (
-      <Modal
-          title="Filter Results"
-          visible={show}
-          onOk={handleOk}
-          onCancel={onClose}
-          width={720}
+        <Modal
+            title="Filter Results"
+            visible={show}
+            onOk={handleOk}
+            onCancel={onClose}
+            width={720}
         >
-        {filterList}
-        {renderButton()}
-       </Modal>
+            {filterList}
+            {renderButton()}
+        </Modal>
     );
 }
 
