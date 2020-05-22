@@ -37,7 +37,6 @@ def api_index():
                 print("Unsupported filter type %s" % filter['filter'])
 
     query = generate_query(req, and_filters, and_not_filters, or_filters)
-    print(query)
     res = es.search(index="pgp", body=query)
     return res
 
