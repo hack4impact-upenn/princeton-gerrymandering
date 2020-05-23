@@ -24,7 +24,9 @@ const FileViewer: React.FC<FileViewerProps> = ({ resource }: FileViewerProps) =>
           ? (<embed src={link} type="application/pdf" width="100%" height="720px" />)
           : (type == "shapefile" && resource.geojson != undefined)
             ? (<GeoJSONViewer source={resource!.geojson}></GeoJSONViewer>)
-            : <Empty description = {"No File Preview Available"}></Empty>;
+            : (type == ".gif" || type == ".png" || type == ".jpg")
+              ? (<img src={link} width='100%'/>)
+                : <Empty description = {"No File Preview Available"}></Empty>;
   }
 
   if (viewer) {
