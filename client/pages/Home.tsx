@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom'
 import axios, { AxiosResponse, AxiosError } from 'axios';
 
-import { Layout, Breadcrumb, Row, Col, Input, Button } from 'antd';
+import { Layout, Breadcrumb, Row, Col, Input, Button, Card, Tag } from 'antd';
 const { Search } = Input;
 const { Content, Footer } = Layout;
 
@@ -152,9 +152,22 @@ const Home: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
     return (
         <Layout>
             <Navbar></Navbar>
-            <Content className="site-layout" style={{ padding: '50px', paddingBottom: 0, marginTop: 64 }}>
-                <RelevancyGraph width = {window.innerWidth - 100}></RelevancyGraph>
-                <div className="site-layout-content" style={{ background: "#fff", padding: 24 }}>
+            <Content className="site-layout" style={{ padding: 0, paddingBottom: 0, marginTop: 64 }}>
+                <Row style = {{backgroundColor: "#376996"}}>
+                    <Col xs = {24} sm = {24} md = {24} lg = {16} xl = {16} style = {{padding: 20}}>
+                        <RelevancyGraph width = {500}></RelevancyGraph>
+                        <p style ={{ position: "absolute", color: "white", bottom: 0}}>A few of the 15000 files</p>
+                    </Col>
+                    <Col xs = {24} sm = {24} md = {24} lg = {8} xl = {8} style = {{padding: 60}}>
+                        <Card>
+                        Thomas Brooks Hofeller was a Republican political strategist primarily known for his involvement in gerrymandering electoral district maps favorable for Republicans. David Daley of The New Yorker referred to Hofeller as "the master of the modern gerrymander."
+                        <br></br>
+                        <br></br>
+                        Search files by <Tag color = "magenta">location</Tag>, <Tag color = "orange">organizations</Tag>, <Tag color = "purple">people</Tag>
+                        </Card>
+                    </Col>
+                </Row>
+                <div className="site-layout-content" style={{ background: "#fff", padding: 74 }}>
                     <Search defaultValue={query} placeholder="Search for files..." onSearch={(values) => search(values, page, pageSize)} onChange={(e) => setQuery(e.target.value)} size="large" enterButton />
                     <Button type="link" style={{ padding: "10px 10px 10px 0" }} onClick={() => setModalShowing(true)}><FilterOutlined></FilterOutlined>Filter Results</Button>
                     <FilterList filters={filters} updateFilters={updateFilters}></FilterList>

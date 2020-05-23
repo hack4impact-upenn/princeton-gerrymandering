@@ -1,4 +1,4 @@
-
+import math
 from flask import Blueprint, request
 from elasticsearch import Elasticsearch
 import certifi
@@ -63,17 +63,24 @@ def graph_neighbors():
     if query == None:
         query = str(random.random())
 
-    neighbors = [{"id": query, "depth": 0}]
+    neighbors = [{"id": query, "depth": 0, "angle": 0}]
     links = []
+
+    children_per_layer = {
+        1: 5,
+        2: 3
+    }
 
     def expand_neighbors(neighbors, links, last_layer, i):
         new_neighbors = []
         for neighbor in last_layer:
-            relevant = [str(random.random()) for i in range(5)]
+            relevant = [str(random.random()) for i in range(children_per_layer[i+1])]
             for r in relevant:
                 if r not in [n["id"] for n in neighbors] and r not in [n["id"] for n in new_neighbors]:
                     links.append({"source": neighbor["id"], "target": r, "length": 1.0/(i+1)})
-                    new_neighbors.append({"id": r, "depth": sum([1.0/(k+1) for k in range(i)]) })
+                    new_neighbors.append({"id": r, "depth": i+1 })
+        for i in range(len(new_neighbors)):
+            new_neighbors[i]['angle'] = 2.0 * math.pi * i / len(new_neighbors) 
         neighbors += new_neighbors
         return new_neighbors
 
