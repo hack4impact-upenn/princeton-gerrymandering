@@ -15,6 +15,7 @@ import Banner from "../assets/banner.svg";
 import { Result, Tags, Filter } from "../types/interfaces"
 import queryString from 'query-string'
 import { RouteComponentProps } from 'react-router-dom';
+import RelevancyGraph from '../components/RelevancyGraph';
 
 interface PostQuery {
     query: string;
@@ -152,6 +153,7 @@ const Home: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
         <Layout>
             <Navbar></Navbar>
             <Content className="site-layout" style={{ padding: '50px', paddingBottom: 0, marginTop: 64 }}>
+                <RelevancyGraph width = {window.innerWidth - 100}></RelevancyGraph>
                 <div className="site-layout-content" style={{ background: "#fff", padding: 24 }}>
                     <Search defaultValue={query} placeholder="Search for files..." onSearch={(values) => search(values, page, pageSize)} onChange={(e) => setQuery(e.target.value)} size="large" enterButton />
                     <Button type="link" style={{ padding: "10px 10px 10px 0" }} onClick={() => setModalShowing(true)}><FilterOutlined></FilterOutlined>Filter Results</Button>

@@ -3,6 +3,7 @@ from flask import Blueprint, request
 from elasticsearch import Elasticsearch
 import certifi
 import json
+import random
 
 with open('./config/config.json') as f:
     config = json.load(f)
@@ -52,6 +53,42 @@ def resource(id):
     }
     res = es.search(index="pgp", body=query)
     return res
+
+
+@api.route("/graph_neighbors", methods=["POST"])
+def graph_neighbors():
+    req = request.get_json()
+    query = req.get('query')
+    # Randomly select root if none provided
+    if query == None:
+        query = str(random.random())
+
+    neighbors = [{"id": query, "depth": 0}]
+    links = []
+
+    def expand_neighbors(neighbors, links, last_layer, i):
+        new_neighbors = []
+        for neighbor in last_layer:
+            relevant = [str(random.random()) for i in range(5)]
+            for r in relevant:
+                if r not in [n["id"] for n in neighbors] and r not in [n["id"] for n in new_neighbors]:
+                    links.append({"source": neighbor["id"], "target": r, "length": 1.0/(i+1)})
+                    new_neighbors.append({"id": r, "depth": sum([1.0/(k+1) for k in range(i)]) })
+        neighbors += new_neighbors
+        return new_neighbors
+
+    ITERATIONS = 2
+
+    global new_neighbors    
+    new_neighbors = neighbors
+    for i in range(ITERATIONS):
+        new_neighbors = expand_neighbors(neighbors, links, new_neighbors, i)
+        
+    return {
+        "nodes": neighbors,
+        "links": links,
+        "root": query
+    }
 
 
 @api.route("/suggested_tags", methods=["POST"])
