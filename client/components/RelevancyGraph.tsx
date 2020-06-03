@@ -92,38 +92,6 @@ const RelevancyGraph: React.FC<RelevancyGraphProps> = ({width}) => {
 
     }
 
-    // const onNodeClick = (d: d3.SimulationNodeDatum) => {
-    //     const TRANSITION_TIME = 500;
-
-
-    //         let newNode: SimulationNode = d as SimulationNode;
-    //         let offsetX: number = d.x != undefined ? d.x - (width / 2) : 0;
-    //         let offsetY: number = d.y != undefined ? d.y - (height / 2) : 0;
-    //         d3.selectAll("text")
-    //             .data(nodes)
-    //             .transition().duration(1000)
-    //             .attr("x", (d: d3.SimulationNodeDatum) => d.x ? d.x - offsetX : width / 2)
-    //             .attr("y", (d: d3.SimulationNodeDatum) => d.y ? d.y - offsetY : height / 2)
-
-    //         d3.selectAll("line")
-    //             .data(links)
-    //             .transition().duration(1000)
-    //             .attr("x1", (d: SimulationLink) => d.source.x ? d.source.x - offsetX : 0)
-    //             .attr("y1", (d: SimulationLink) => d.source.y ? d.source.y - offsetY : 0)
-    //             .attr("x2", (d: SimulationLink) => d.target.x ? d.target.x - offsetX : 0)
-    //             .attr("y2", (d: SimulationLink) => d.target.y ? d.target.y - offsetY : 0)
-    //             .end().then(() => {
-    //                 setRoot(newNode.id)
-    //             })
-
-    //         d3.selectAll("circle")
-    //             .data(nodes)
-    //             .join("circle")
-    //             .transition().duration(1000)
-    //             .attr("cx", (d: d3.SimulationNodeDatum) => d.x ? d.x - offsetX : width / 2)
-    //             .attr("cy", (d: d3.SimulationNodeDatum) => d.y ? d.y - offsetY : height / 2)
-    // }
-
     useEffect(() => {
         const MAX_DEPTH = 2;
         if (links && nodes) {
