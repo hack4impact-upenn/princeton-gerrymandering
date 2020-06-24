@@ -24,6 +24,7 @@ const RelevancyGraph: React.FC<RelevancyGraphProps> = ({width}) => {
 
     useEffect(() => {
         axios.post<RelevancyGraphQuery>('/api/graph_neighbors', {
+            withCredentials: true,
             query: root
         }).then((data) => {
             let res = data.data as any;

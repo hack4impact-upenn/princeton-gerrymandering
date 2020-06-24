@@ -4,12 +4,16 @@ import {BrowserRouter as Router, Switch, Route, BrowserRouter} from 'react-route
 import Home from "./pages/Home";
 import PageNotFound from "./pages/PageNotFound";
 import Resource from "./pages/Resource";
+import Login from './pages/Login';
+import Unauthorized from "./pages/Unauthorized"
 
 const App : React.FC = () => {
     return (
         <BrowserRouter>
             <Switch>
                 <Route path = "/" exact component = { Home } />
+                <Route path = "/unauthorized" exact component = { Unauthorized } />
+                <Route path = "/login" exact component = {Login} />
                 <Route path = "/resource/:id" exact component = { Resource } />
                 <Route path = "/" component = { PageNotFound } />
             </Switch>

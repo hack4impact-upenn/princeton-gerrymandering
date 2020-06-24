@@ -1,20 +1,33 @@
 import math
-from flask import Blueprint, request
+from flask import Blueprint, request, current_app, Flask
 from elasticsearch import Elasticsearch
 import certifi
 import json
 import random
 
-with open('./config/config.json') as f:
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token,
+    jwt_refresh_token_required, create_refresh_token,
+    get_jwt_identity, set_access_cookies,
+    set_refresh_cookies, unset_jwt_cookies
+)
+
+from util.elasticsearch_queries import or_contains_filter, or_not_contains_filter, and_filter, generate_query
+
+api = Blueprint('api', __name__)
+
+with open('./api/config/config.json') as f:
     config = json.load(f)
+    es = Elasticsearch(
+        [config.get("ELASTICSEARCH_URL")], 
+        use_ssl=True, 
+        ca_certs=certifi.where()
+    )
 
-api = Blueprint('api', __name__,)
-es = Elasticsearch([config["ELASTICSEARCH_URL"]],
-                   use_ssl=True, ca_certs=certifi.where())
-
-
-@api.route("/search", methods=["GET", "POST"])
+@api.route("/search", methods=["POST"])
+@jwt_required
 def api_index():
+    print(get_jwt_identity())
     req = request.get_json()
     and_filters = []
     and_not_filters = []
@@ -43,6 +56,7 @@ def api_index():
 
 
 @api.route("/resource/<string:id>", methods=["GET"])
+@jwt_required
 def resource(id):
     query = {
         "query": {
@@ -56,6 +70,7 @@ def resource(id):
 
 
 @api.route("/graph_neighbors", methods=["POST"])
+@jwt_required
 def graph_neighbors():
     req = request.get_json()
     query = req.get('query')
@@ -126,53 +141,4 @@ def suggested_tags():
     tags = list(filter( lambda tag : tag.lower().startswith(req["query"].lower()), all_tags))[0:25]
     return {
         "tags": tags
-    }
-
-def or_contains_filter(filter):
-    return {
-        "bool": {
-            "must": {
-                "term": {
-                    "tags.%s.keyword" % filter['attribute']: filter['value']
-                }
-            }
-        }
-    }
-
-
-def or_not_contains_filter(filter):
-    return {
-        "bool": {
-            "must_not": {
-                "term": {
-                    "tags.%s.keyword" % filter['attribute']: filter['value']
-                }
-            }
-        }
-    }
-
-
-def and_filter(filter):
-    return {
-        "term": {
-            "tags.%s.keyword" % filter['attribute']: filter['value']
-        }
-    }
-
-
-def generate_query(req, and_filters, and_not_filters, or_filters):
-    return {
-        "query": {
-            "bool": {
-                "must": {"simple_query_string": {
-                    "query": req['query']
-                }},
-                "filter": and_filters,
-                "must_not": and_not_filters,
-                "should": or_filters,
-                "minimum_should_match": 0 if len(or_filters) == 0 else 1
-            },
-        },
-        "size": req['pageSize'],
-        "from": req['pageSize'] * (req['page'] - 1)
     }

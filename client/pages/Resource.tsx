@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import { Layout, Button, Spin, List, Typography, Tag, Collapse, PageHeader, Divider } from 'antd';
-import { DownloadOutlined, UpOutlined, DownOutlined, CaretRightOutlined } from '@ant-design/icons';
+import { DownloadOutlined, UpOutlined, DownOutlined, CaretRightOutlined, PlusCircleOutlined } from '@ant-design/icons';
 const { Content, Footer } = Layout;
 import Navbar from "../components/Navbar";
 import SimilarCarousel from "../components/SimilarCarousel";
 import FileViewer from "../components/FileViewer";
+import AddTagsModal from "../components/AddTagsModal";
 import { Redirect } from 'react-router-dom';
 import { Result, Tags, TagsMap } from "../types/interfaces"
 
@@ -149,7 +150,10 @@ const Resource: React.FC = () => {
             <Content className="site-layout" style={{ padding: '50px', paddingBottom: 0, marginTop: 64 }}>
                 <div className="site-layout-content" style={{ background: "#fff", padding: 50 }}>
                     {renderHeader()}
-                    <Divider style = {{ fontSize: 18, marginTop: 40 }}>Document Tags</Divider>
+                    <Divider style = {{ fontSize: 18, marginTop: 40 }}>
+                        Document Tags
+                        <AddTagsModal></AddTagsModal>
+                    </Divider>
                         {renderTagsList()}
                     <Divider style = {{ fontSize: 18, marginTop: 40 }}>File Preview</Divider>
                     <FileViewer resource = {resource}></FileViewer>

@@ -69,6 +69,7 @@ const FilterRow: React.FC<FilterRowProps> = ({ filters, index, updateFilters, up
     const updateValue = (value: string) => {
         setValue(value);
         axios.post<SuggestedTagsQuery>("api/suggested_tags", {
+            withCredentials: true,
             type: attribute,
             query: value
         }).then((res) => {

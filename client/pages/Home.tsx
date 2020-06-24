@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom'
 import axios, { AxiosResponse, AxiosError } from 'axios';
+axios.defaults.withCredentials = true;
 
 import { Layout, Breadcrumb, Row, Col, Input, Button, Card, Tag } from 'antd';
 const { Search } = Input;
@@ -55,6 +56,7 @@ const Home: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
     const [pageSize, setPageSize] = useState(page_size_param);
     const [page, setPage] = useState(page_param)
 
+
     const search = (values: any, page_: number, pageSize_: number) => {
         
         history.pushState({
@@ -72,6 +74,7 @@ const Home: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
         setLoaded(false);
         setShowResults(true);
         axios.post<PostQuery>("/api/search", {
+            withCredentials: true,
             query,
             filters,
             isOr,
@@ -153,22 +156,7 @@ const Home: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
         <Layout>
             <Navbar></Navbar>
             <Content className="site-layout" style={{ padding: 0, paddingBottom: 0, marginTop: 64 }}>
-                <Row style = {{backgroundColor: "#376996"}}>
-                    <Col xs = {24} sm = {24} md = {24} lg = {16} xl = {16} style = {{padding: 20}}>
-                        <RelevancyGraph width = {400}></RelevancyGraph>
-                        <p style ={{ position: "absolute", color: "white", bottom: 0}}>A few of the 15000 files</p>
-                    </Col>
-                    <Col xs = {24} sm = {24} md = {24} lg = {8} xl = {8} style = {{padding: "60px 60px 60px 0"}}>
-                        <Card>
-                        More than a year after his death, a cache of computer files saved on the hard drives of Thomas Hofeller, a prominent Republican redistricting strategist, is becoming public. Republican state lawmakers in North Carolina fought in court to keep copies of these maps, spreadsheets and other documents from entering the public record. But some files have already come to light in recent months through court filings and news reports.
-                        <br/><br/>
-                        {/* They have been cited as evidence of gerrymandering that got political maps thrown out in North Carolina, and they have raised questions about Hofeller's role in the Trump administration's failed push for a census citizenship question.<br></br> */}
-                       
-                        Search files by keywords, filtering by <Tag color = "magenta">location</Tag>, <Tag color = "orange">organizations</Tag>, and <Tag color = "purple">people</Tag>. Documents have been tagged with semantic information, and also will provide links to relevant files.
-                        </Card>
-                    </Col>
-                </Row>
-                <div className="site-layout-content" style={{ background: "#fff", padding: 74 }}>
+                <div className="site-layout-content" style={{ background: "#fff", padding: 74, margin: 50 }}>
                     <Search defaultValue={query} placeholder="Search for files..." onSearch={(values) => search(values, page, pageSize)} onChange={(e) => setQuery(e.target.value)} size="large" enterButton />
                     <Button type="link" style={{ padding: "10px 10px 10px 0" }} onClick={() => setModalShowing(true)}><FilterOutlined></FilterOutlined>Filter Results</Button>
                     <FilterList filters={filters} updateFilters={updateFilters}></FilterList>
