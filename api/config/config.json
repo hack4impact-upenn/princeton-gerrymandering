@@ -1,0 +1,9 @@
+{
+    "ELASTICSEARCH_URL": "",
+    "JWT_TOKEN_LOCATION": [""],
+    "JWT_COOKIE_SECURE": false,
+    "JWT_REFRESH_COOKIE_PATH": "/token/refresh",
+    "JWT_COOKIE_CSRF_PROTECT": true,
+    "JWT_SECRET_KEY": "",
+    "JWT_ACCESS_TOKEN_EXPIRES": 1
+}

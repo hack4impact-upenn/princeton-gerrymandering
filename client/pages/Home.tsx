@@ -15,8 +15,11 @@ import FilterList from "../components/FilterList";
 import Banner from "../assets/banner.svg";
 import { Result, Tags, Filter } from "../types/interfaces"
 import queryString from 'query-string'
-import { RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, Redirect } from 'react-router-dom';
 import RelevancyGraph from '../components/RelevancyGraph';
+
+import secureRequest from '../util/secureRequest';
+import isAuthenticated from "../util/isAuthenticated";
 
 interface PostQuery {
     query: string;
@@ -73,15 +76,14 @@ const Home: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
 
         setLoaded(false);
         setShowResults(true);
-        axios.post<PostQuery>("/api/search", {
-            withCredentials: true,
-            query,
-            filters,
-            isOr,
-            page: page_,
-            pageSize: pageSize_
-        }).then((res) => {
-            const data = res.data as any;
+
+        secureRequest("/api/search", "POST", {
+                query,
+                filters,
+                isOr,
+                page: page_,
+                pageSize: pageSize_
+        }).then(data => {
             const hits = data.hits.hits
 
             setTotalResults(data.hits.total.value);
@@ -112,8 +114,7 @@ const Home: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
             });
             setLoaded(true);
             setResults(results);
-
-        }).catch((err) => {
+        }).catch(err => {
             console.log(err)
         })
     };
@@ -129,7 +130,7 @@ const Home: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
             setPage(1);
             search(query, page, pageSize);
         }
-    }, [filters])
+    }, [isModalShowing])
 
     const closeModal = () => {
         setModalShowing(false);

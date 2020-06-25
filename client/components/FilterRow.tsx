@@ -13,6 +13,7 @@ import '../css/FilterRow.css';
 import { Filter } from "../types/interfaces"
 
 import axios, { AxiosResponse, AxiosError } from 'axios';
+import secureRequest from '../util/secureRequest';
 
 interface SuggestedTagsQuery {
     type: string;
@@ -29,7 +30,7 @@ interface FilterRowProps {
 
 
 const FilterRow: React.FC<FilterRowProps> = ({ filters, index, updateFilters, updateIsOr, isOr }: FilterRowProps) => {
-    const [attribute, setAttribute] = useState("");
+    const [attribute, setAttribute] = useState(filters[index].attribute);
     const [filter, setFilter] = useState("");
     const [value, setValue] = useState("");
 
@@ -68,16 +69,26 @@ const FilterRow: React.FC<FilterRowProps> = ({ filters, index, updateFilters, up
 
     const updateValue = (value: string) => {
         setValue(value);
-        axios.post<SuggestedTagsQuery>("api/suggested_tags", {
-            withCredentials: true,
+
+        secureRequest("/api/suggested_tags", "POST",    {
             type: attribute,
             query: value
         }).then((res) => {
-            const data = res as any;
-            setSuggestedTags(data.data.tags.map((tag) => ({ value: tag })))
+            setSuggestedTags(res.tags.map((tag) => ({ value: tag })))
         }).catch((err) => {
             console.log(err)
         })
+
+        // axios.post<SuggestedTagsQuery>("api/suggested_tags", {
+        //     type: attribute,
+        //     query: value
+        // }).then((res) => {
+        //     const data = res as any;
+        //     console.log(data)
+        //     setSuggestedTags(data.data.tags.map((tag) => ({ value: tag })))
+        // }).catch((err) => {
+        //     console.log(err)
+        // })
         updateProperty("value", value);
     }
 

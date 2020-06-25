@@ -5,6 +5,8 @@ import certifi
 import json
 import random
 
+from .auth import login_required
+
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
     jwt_refresh_token_required, create_refresh_token,
@@ -25,10 +27,10 @@ with open('./api/config/config.json') as f:
     )
 
 @api.route("/search", methods=["POST"])
-@jwt_required
+@login_required
 def api_index():
-    print(get_jwt_identity())
     req = request.get_json()
+    print(req)
     and_filters = []
     and_not_filters = []
     or_filters = []
@@ -56,7 +58,7 @@ def api_index():
 
 
 @api.route("/resource/<string:id>", methods=["GET"])
-@jwt_required
+@login_required
 def resource(id):
     query = {
         "query": {
@@ -70,7 +72,7 @@ def resource(id):
 
 
 @api.route("/graph_neighbors", methods=["POST"])
-@jwt_required
+@login_required
 def graph_neighbors():
     req = request.get_json()
     query = req.get('query')
@@ -114,6 +116,7 @@ def graph_neighbors():
 
 
 @api.route("/suggested_tags", methods=["POST"])
+@login_required
 def suggested_tags():
     req = request.get_json()
     query = {

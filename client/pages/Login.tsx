@@ -20,8 +20,7 @@ const Login: React.FC = () => {
     const history = useHistory()
 
     const submitData = (values : any) => {
-        axios.post<PostLoginRequest>("/login", {
-            withCredentials: true,
+        axios.post<PostLoginRequest>("/auth/login", {
             username,
             password,
         }).then( (res) => {

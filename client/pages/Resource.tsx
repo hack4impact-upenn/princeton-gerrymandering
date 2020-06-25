@@ -15,6 +15,7 @@ import {
     useParams
 } from "react-router-dom";
 import PageNotFound from './PageNotFound';
+import secureRequest from '../util/secureRequest';
 
 
 const Resource: React.FC = () => {
@@ -25,9 +26,7 @@ const Resource: React.FC = () => {
     const url = `/api/resource/${id}`;
 
     useEffect(() => {
-        const fetchData = async () => {
-            const res = await axios(url);
-            const data = res.data as any;
+        secureRequest(url, "GET", {}).then( (data) => {
             const result = data.hits.hits[0];
             if (result) {
                 const filename = result._source.path;
@@ -61,8 +60,49 @@ const Resource: React.FC = () => {
                 setLoading(false);
                 setResource(undefined);
             }
-        };
-        fetchData();
+        }).catch( (error) => {
+            console.error(error)
+        })
+
+
+        // const fetchData = async () => {
+        //     const res = await axios(url);
+        //     const data = res.data as any;
+        //     const result = data.hits.hits[0];
+        //     if (result) {
+        //         const filename = result._source.path;
+
+        //         const tags: Tags = {}
+        //         Object.keys(result._source.tags).forEach((tag: string) => {
+        //             let tagList: string[] = result._source.tags[tag];
+        //             let tagSet: Set<string> = new Set<string>(tagList);
+        //             tagList = [...tagSet];
+        //             tags[tag] = tagList;
+        //         });
+
+        //         const newResult: Result = {
+        //             id: result._id,
+        //             file: result._source.path,
+        //             name: result._source.name,
+        //             tags: tags,
+        //             text: result._source.text,
+        //             type: result._source.filetype,
+        //         }
+
+        //         if(result._source.filetype == "shapefile"){
+        //             newResult.geojson = result._source.geojson
+        //         }
+
+        //         document.title = newResult.name;
+        //         setResource(newResult);
+        //         setLoading(false);
+        //     }
+        //     else {
+        //         setLoading(false);
+        //         setResource(undefined);
+        //     }
+        // };
+        // fetchData();
     }, []);
 
     const renderHeader = () => {

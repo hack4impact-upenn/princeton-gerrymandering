@@ -28,9 +28,9 @@ const Navbar: React.FC<NavbarProps> = ({ selected = "", hideMenu = false}: Navba
                 margin: "20px 24px 16px 0",
                 float: "left"
             }}>
-                <Link to = "/">
+                <a href = "/">
                     <h1>Hofeller Files</h1>
-                    </Link>
+                    </a>
             </div>
 
             {/* Render regular menu if big enough */}
@@ -42,7 +42,7 @@ const Navbar: React.FC<NavbarProps> = ({ selected = "", hideMenu = false}: Navba
                     defaultSelectedKeys={[selected]}
                 >
                     <Menu.Item key="logout">
-                            <a href = "/logout">Log Out</a>
+                            <a href = "/auth/logout">Log Out</a>
                         </Menu.Item>
                 </Menu>
             }
@@ -68,7 +68,7 @@ const Navbar: React.FC<NavbarProps> = ({ selected = "", hideMenu = false}: Navba
 
                     <SubMenu title={<MenuOutlined></MenuOutlined>}>
                         <Menu.Item key="logout">
-                            <Link to="/logout">Log Out</Link>
+                        <a href = "/auth/logout">Log Out</a>
                         </Menu.Item>
                     </SubMenu>
                 </Menu>
