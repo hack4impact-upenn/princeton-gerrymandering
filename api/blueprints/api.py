@@ -1,11 +1,11 @@
 import math
-from flask import Blueprint, request, current_app, Flask
+from flask import Blueprint, request, jsonify
 from elasticsearch import Elasticsearch
 import certifi
 import json
 import random
 
-from .auth import login_required
+from .auth import login_required, admin_required
 
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
@@ -14,7 +14,11 @@ from flask_jwt_extended import (
     set_refresh_cookies, unset_jwt_cookies
 )
 
-from util.elasticsearch_queries import or_contains_filter, or_not_contains_filter, and_filter, generate_query
+from util.elasticsearch_queries import (
+    or_contains_filter, or_not_contains_filter,
+    and_filter, search_query, 
+    add_tags_query, remove_tags_query
+)
 
 api = Blueprint('api', __name__)
 
@@ -26,11 +30,12 @@ with open('./api/config/config.json') as f:
         ca_certs=certifi.where()
     )
 
+
+
 @api.route("/search", methods=["POST"])
 @login_required
 def api_index():
     req = request.get_json()
-    print(req)
     and_filters = []
     and_not_filters = []
     or_filters = []
@@ -52,8 +57,8 @@ def api_index():
             else:
                 print("Unsupported filter type %s" % filter['filter'])
 
-    query = generate_query(req, and_filters, and_not_filters, or_filters)
-    res = es.search(index="pgp", body=query)
+    query = search_query(req, and_filters, and_not_filters, or_filters)
+    res = es.search(index=config.get("ELASTICSEARCH_INDEX"), body=query)
     return res
 
 
@@ -67,8 +72,49 @@ def resource(id):
             }
         }
     }
-    res = es.search(index="pgp", body=query)
+    res = es.search(index=config.get("ELASTICSEARCH_INDEX"), body=query)
     return res
+
+
+@api.route("/tags/add", methods = ["POST"])
+@login_required
+def add_tags():
+    req = request.get_json()
+
+    tag_type = req.get("tagType")
+    tag_value = req.get("tagValue")
+    resource_id = req.get("resourceId")
+
+    if tag_type not in ["locations", "people", "orgs", "other"] or tag_value is "":
+        return jsonify({
+            "msg": "Please fill out all fields" 
+        }), 400
+
+    res = es.update(index=config.get("ELASTICSEARCH_INDEX"), id=resource_id, body=add_tags_query(tag_type, tag_value), refresh=True)
+
+    return jsonify({
+        "added": True
+    }), 200
+
+
+@api.route("/tags/remove", methods = ["POST"])
+@admin_required
+def remove_tags():
+    req = request.get_json()
+
+    tag_type = req.get("tagType")
+    tag_value = req.get("tagValue")
+    resource_id = req.get("resourceId")
+
+    if tag_type not in ["locations", "people", "orgs", "other"] or tag_value is "":
+        return jsonify({
+            "msg": "Unknown error" 
+        }), 400
+
+    res = es.update(index=config.get("ELASTICSEARCH_INDEX"), id=resource_id, body=remove_tags_query(tag_type, tag_value), refresh=True)
+    return jsonify({
+        "removed": True
+    }), 200
 
 
 @api.route("/graph_neighbors", methods=["POST"])
@@ -115,7 +161,7 @@ def graph_neighbors():
     }
 
 
-@api.route("/suggested_tags", methods=["POST"])
+@api.route("/tags/suggestions", methods=["POST"])
 @login_required
 def suggested_tags():
     req = request.get_json()
@@ -138,7 +184,7 @@ def suggested_tags():
         "size": 0
     }
 
-    res = es.search(index="pgp", body=query)
+    res = es.search(index=config.get("ELASTICSEARCH_INDEX"), body=query)
     buckets = res["aggregations"]["suggested_tags"]["buckets"]
     all_tags = [bucket["key"] for bucket in buckets]
     tags = list(filter( lambda tag : tag.lower().startswith(req["query"].lower()), all_tags))[0:25]

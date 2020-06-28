@@ -1,10 +1,12 @@
 import secureRequest from "./secureRequest";
 
 const isAuthenticated = () => {
-    secureRequest("/auth/authenticated", "GET").then( (data) => {
-        return true
-    }).catch( (error) => {
-        return false;
+    return new Promise( (resolve, reject) => {
+        secureRequest("/auth/authenticated", "GET").then( (data) => {
+            resolve(data)
+        }).catch( (error) => {
+            reject(data)
+        })  
     })
 }
 

@@ -22,21 +22,31 @@ const secureRequest = (url, method, data) => {
                         },
                         body: method == "GET" ? undefined : JSON.stringify(data) 
                     }).then( (res) => {
-                        res.json().then((data) => {
-                            resolve(data)
-                        })
+                        if(res.ok){
+                            res.json().then((data) => {
+                                resolve(data)
+                            })   
+                        } else {
+                            res.json().then((err) => {
+                                reject(err)
+                            }) 
+                        }
                     }).catch( (error) => {
-                        console.log(29)
                         reject(error)
                     })  
                 }).catch( error => {
-                    console.log(33)
                     reject(error)
                 })
             } else {
-                res.json().then((data) => {
-                    resolve(data)
-                })
+                if(res.ok){
+                    res.json().then((data) => {
+                        resolve(data)
+                    })   
+                } else {
+                    res.json().then((err) => {
+                        reject(err)
+                    }) 
+                }
             }
         }).catch(error => {
             reject(error)

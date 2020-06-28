@@ -70,7 +70,7 @@ const FilterRow: React.FC<FilterRowProps> = ({ filters, index, updateFilters, up
     const updateValue = (value: string) => {
         setValue(value);
 
-        secureRequest("/api/suggested_tags", "POST",    {
+        secureRequest("/api/tags/suggestions", "POST",    {
             type: attribute,
             query: value
         }).then((res) => {
@@ -79,16 +79,6 @@ const FilterRow: React.FC<FilterRowProps> = ({ filters, index, updateFilters, up
             console.log(err)
         })
 
-        // axios.post<SuggestedTagsQuery>("api/suggested_tags", {
-        //     type: attribute,
-        //     query: value
-        // }).then((res) => {
-        //     const data = res as any;
-        //     console.log(data)
-        //     setSuggestedTags(data.data.tags.map((tag) => ({ value: tag })))
-        // }).catch((err) => {
-        //     console.log(err)
-        // })
         updateProperty("value", value);
     }
 

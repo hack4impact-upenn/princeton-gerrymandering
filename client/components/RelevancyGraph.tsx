@@ -32,7 +32,6 @@ const RelevancyGraph: React.FC<RelevancyGraphProps> = ({width}) => {
             if (!root) {
                 setRoot(res.root)
             } else {
-                console.log("hello")
                 setNodes(res.nodes.map((n) => {
                     return {
                         id: n.id,

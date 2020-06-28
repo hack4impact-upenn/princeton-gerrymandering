@@ -38,7 +38,6 @@ def login():
 def login_required(route):
     @functools.wraps(route)
     def wrapper(*args, **kwds):
-        print("running")
         try:
             token = decode_token(
                 request.cookies.get('access_token_cookie'), 
@@ -56,6 +55,13 @@ def login_required(route):
         except Exception as e:
             return redirect("/unauthorized"), 302
 
+        return route(*args, **kwds)
+    return wrapper
+
+# TODO: Add admin functionality
+def admin_required(route):
+    @functools.wraps(route)
+    def wrapper(*args, **kwds):
         return route(*args, **kwds)
     return wrapper
 
@@ -83,6 +89,17 @@ def authentication_required(route):
     return wrapper
 
 
+@auth.route("/authenticated")
+@login_required
+def is_authenticated():
+    # TODO: Add admin functionality
+    IS_ADMIN = True
+
+    return jsonify({
+        "admin": IS_ADMIN
+    }), 200
+
+
 @auth.route('/token/refresh', methods=['POST'])
 def refresh():
     try: 
@@ -103,15 +120,6 @@ def refresh():
 
     # Set the access JWT and CSRF double submit protection cookies
     # in this response
-
-# Returns whether the current user is authenticated
-@auth.route('/authenticated')
-@login_required
-def is_authenticated():
-    print("hello")
-    return jsonify({
-            "msg": "he"
-        }), 500
 
 @auth.route('/logout', methods=['GET'])
 def logout():

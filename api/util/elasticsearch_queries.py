@@ -30,7 +30,7 @@ def and_filter(filter):
     }
 
 
-def generate_query(req, and_filters, and_not_filters, or_filters):
+def search_query(req, and_filters, and_not_filters, or_filters):
     return {
         "query": {
             "bool": {
@@ -45,4 +45,26 @@ def generate_query(req, and_filters, and_not_filters, or_filters):
         },
         "size": req['pageSize'],
         "from": req['pageSize'] * (req['page'] - 1)
+    }
+
+def add_tags_query(tag_type, tag_value):
+    return {
+        "script" : {
+            "inline": "ctx._source.tags.%s.add(params.new_tag)" % (tag_type),
+            "lang": "painless",
+            "params" : {
+                "new_tag" : tag_value
+            }
+        }
+    }
+
+def remove_tags_query(tag_type, tag_value):
+     return {
+        "script" : {
+            "inline": "ctx._source.tags.%s.removeAll(Collections.singleton(params.tag_value))" % (tag_type),
+            "lang": "painless",
+            "params" : {
+                "tag_value" : tag_value
+            }
+        }
     }

@@ -17,6 +17,8 @@ const Login: React.FC = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
+    const [error, setError] = useState(false);
+
     const history = useHistory()
 
     const submitData = (values : any) => {
@@ -26,7 +28,7 @@ const Login: React.FC = () => {
         }).then( (res) => {
             history.push("/")
         }).catch( (err) => {
-            console.log(err.response)
+            setError(true)
         })
     };
 
@@ -58,6 +60,7 @@ const Login: React.FC = () => {
                                 <Form.Item
                                     name="password"
                                     rules={[{ required: true, message: 'Please input your Password!' }]}
+                                    extra = {error && (<Typography.Text type = "danger">Username or Password Incorect</Typography.Text>)}
                                 >
                                     <Input
                                         prefix={<LockOutlined className="site-form-item-icon" />}

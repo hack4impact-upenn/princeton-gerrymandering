@@ -130,7 +130,7 @@ const Home: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
             setPage(1);
             search(query, page, pageSize);
         }
-    }, [isModalShowing])
+    }, [isModalShowing, filters.length])
 
     const closeModal = () => {
         setModalShowing(false);
