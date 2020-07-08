@@ -9,6 +9,8 @@ import SubMenu from 'antd/lib/menu/SubMenu';
 import useWindowSize from "../util/useWindowSize";
 import { Link } from 'react-router-dom';
 
+import isAuthenticated from '../util/isAuthenticated';
+
 
 interface NavbarProps {
     // selected : which one of the menu items shows as selected (underlined)
@@ -18,6 +20,16 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ selected = "", hideMenu = false}: NavbarProps) => {
     const [width, height] = useWindowSize();
+    const [isAdmin, setIsAdmin] = useState(false)
+
+    useEffect(() => {
+        (isAuthenticated() as any).then( (data ) => {
+            setIsAdmin(data.admin)
+        }).catch( (err) => {
+            setIsAdmin(false);
+        })
+    }, []);
+
     // Breakpoint width to change from desktop menu to mobile menu
     const menuBreakpoint = 768;
 
@@ -36,14 +48,20 @@ const Navbar: React.FC<NavbarProps> = ({ selected = "", hideMenu = false}: Navba
             {/* Render regular menu if big enough */}
             {width > menuBreakpoint && !hideMenu &&
                 <Menu
-
                     mode="horizontal"
                     style={{ lineHeight: '62px', float: "right", borderBottom: "none" }}
                     defaultSelectedKeys={[selected]}
                 >
-                    <Menu.Item key="logout">
-                            <a href = "/auth/logout">Log Out</a>
+
+                    { isAdmin && 
+                        <Menu.Item key="users">
+                            <a href = "/users">Manage Users</a>
                         </Menu.Item>
+                    }
+
+                    <Menu.Item key="logout">
+                        <a href = "/auth/logout">Log Out</a>
+                    </Menu.Item>
                 </Menu>
             }
 
@@ -67,8 +85,14 @@ const Navbar: React.FC<NavbarProps> = ({ selected = "", hideMenu = false}: Navba
                     </SubMenu> */}
 
                     <SubMenu title={<MenuOutlined></MenuOutlined>}>
+                        { isAdmin && 
+                            <Menu.Item key="users">
+                                <a href = "/users">Manage Users</a>
+                            </Menu.Item>
+                        }
+
                         <Menu.Item key="logout">
-                        <a href = "/auth/logout">Log Out</a>
+                            <a href = "/auth/logout">Log Out</a>
                         </Menu.Item>
                     </SubMenu>
                 </Menu>

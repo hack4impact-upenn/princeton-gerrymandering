@@ -6,6 +6,7 @@ import PageNotFound from "./pages/PageNotFound";
 import Resource from "./pages/Resource";
 import Login from './pages/Login';
 import Unauthorized from "./pages/Unauthorized"
+import Users from './pages/Users';
 
 const App : React.FC = () => {
     return (
@@ -15,6 +16,7 @@ const App : React.FC = () => {
                 <Route path = "/unauthorized" exact component = { Unauthorized } />
                 <Route path = "/login" exact component = {Login} />
                 <Route path = "/resource/:id" exact component = { Resource } />
+                <Route path = "/users" exact component = { Users } /> 
                 <Route path = "/" component = { PageNotFound } />
             </Switch>
         </BrowserRouter>

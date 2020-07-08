@@ -18,6 +18,11 @@ Before running the application, you'll need to set configuration variables in th
 | JWT_COOKIE_CSRF_PROTECT  | Enable/disable CSRF protection when using cookies. See [JWT docs](https://flask-jwt-extended.readthedocs.io/en/stable/options/) for more information                   |
 | JWT_SECRET_KEY           | The secret key needed for symmetric based signing algorithms. See [JWT docs](https://flask-jwt-extended.readthedocs.io/en/stable/options/) for more information        |
 | JWT_ACCESS_TOKEN_EXPIRES | How long an access token should live before it expires (in seconds). See [JWT docs](https://flask-jwt-extended.readthedocs.io/en/stable/options/) for more information |
+| AWS_ACCESS_KEY | The AWS access key for the entire application |
+| AWS_SECRET_KEY | The AWS secret key for the entire application |
+| AWS_USER_BUCKET | The name of the bucket the application should use to store user information |
+| DEFAULT_ADMIN_USER | The username for the default admin account created when the app starts and no admin account already exists |
+| DEFAULT_ADMIN_PASS | The password for the default admin account created when the app starts and no admin account already exists  |
 
 ## Running the Application
 ### Development

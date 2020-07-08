@@ -10,7 +10,8 @@ from flask_jwt_extended import (
     set_refresh_cookies, unset_jwt_cookies
 )
 
-from blueprints.auth import authentication_required
+from blueprints.auth import authentication_required, admin_required
+from util.user import create_default_admin
 
 app = Flask(__name__, static_folder='../client/dist', static_url_path='/static/')
 with open('./api/config/config.json') as f:
@@ -26,17 +27,30 @@ app.register_blueprint(api_blueprint, url_prefix = "/api")
 from blueprints.auth import auth as auth_blueprint
 app.register_blueprint(auth_blueprint, url_prefix = "/auth")
 
+from blueprints.users import users as users_blueprint
+app.register_blueprint(users_blueprint, url_prefix = "/user")
+
+create_default_admin()
+
 
 @app.route("/login")
 @app.route("/unauthorized")
 def open_pages():
     return app.send_static_file('index.html')
 
+
+@app.route("/users")
+@admin_required
+def admin_required_pages():
+    return app.send_static_file('index.html')
+
+
 @app.route('/', defaults={'upath': ''})
 @app.route('/<path:upath>')
 @authentication_required
-def index(upath):
+def user_protected_pages(upath):
     return app.send_static_file('index.html')
+
 
 app.run(
     debug=os.environ.get("FLASK_ENV") == "development"
