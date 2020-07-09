@@ -11,8 +11,9 @@ Before running the application, you'll need to set configuration variables in th
 
 | Variable                 | Description                                                                                                                                                            |
 |--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ELASTICSEARCH_URL        | The URL for the ElasticSearch instance hosting the processed JSON documents                                                                                            |
+| ELASTICSEARCH_URL        | The URL for the ElasticSearch instance hosting the processed JSON documents, this URL should not contain `http://` or `https://`, just the domain URL itself                                                                                            |
 | ELASTICSEARCH_INDEX      | The main index the where the processed JSON documents are stored                                                                                                       |
+| ELASTICSEARCH_REGION      | The region in which the ElasticSearch server is running                                                                                                       |
 | JWT_TOKEN_LOCATION       | Where to look for a JWT when processing a request. See [JWT docs](https://flask-jwt-extended.readthedocs.io/en/stable/options/) for more information                   |
 | JWT_COOKIE_SECURE        | If the secure flag should be set on your JWT cookies. See [JWT docs](https://flask-jwt-extended.readthedocs.io/en/stable/options/) for more information                |
 | JWT_COOKIE_CSRF_PROTECT  | Enable/disable CSRF protection when using cookies. See [JWT docs](https://flask-jwt-extended.readthedocs.io/en/stable/options/) for more information                   |

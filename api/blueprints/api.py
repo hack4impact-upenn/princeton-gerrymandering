@@ -1,11 +1,12 @@
 import math
 from flask import Blueprint, request, jsonify
-from elasticsearch import Elasticsearch
 import certifi
 import json
 import random
 
 from .auth import login_required, admin_required
+from requests_aws4auth import AWS4Auth
+from elasticsearch import Elasticsearch, RequestsHttpConnection
 
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
@@ -24,12 +25,22 @@ api = Blueprint('api', __name__)
 
 with open('./api/config/config.json') as f:
     config = json.load(f)
-    es = Elasticsearch(
-        [config.get("ELASTICSEARCH_URL")], 
-        use_ssl=True, 
-        ca_certs=certifi.where()
-    )
 
+    awsauth = AWS4Auth(
+        config.get("AWS_ACCESS_KEY"), 
+        config.get("AWS_SECRET_KEY"), 
+        config.get("ELASTICSEARCH_REGION"), 
+        'es'
+    )
+    
+    es = Elasticsearch(
+        hosts=[ {'host': config.get("ELASTICSEARCH_URL"), 'port': 443} ],
+        http_auth=awsauth,
+        use_ssl=True,
+        timeout=30,
+        verify_certs=True,
+        connection_class=RequestsHttpConnection
+    )
 
 
 @api.route("/search", methods=["POST"])
@@ -115,50 +126,6 @@ def remove_tags():
     return jsonify({
         "removed": True
     }), 200
-
-
-@api.route("/graph_neighbors", methods=["POST"])
-@login_required
-def graph_neighbors():
-    req = request.get_json()
-    query = req.get('query')
-    # Randomly select root if none provided
-    if query == None:
-        query = str(random.random())
-
-    neighbors = [{"id": query, "depth": 0, "angle": 0}]
-    links = []
-
-    children_per_layer = {
-        1: 5,
-        2: 3
-    }
-
-    def expand_neighbors(neighbors, links, last_layer, i):
-        new_neighbors = []
-        for neighbor in last_layer:
-            relevant = [str(random.random()) for i in range(children_per_layer[i+1])]
-            for r in relevant:
-                if r not in [n["id"] for n in neighbors] and r not in [n["id"] for n in new_neighbors]:
-                    links.append({"source": neighbor["id"], "target": r, "length": 1.0/(i+1)})
-                    new_neighbors.append({"id": r, "depth": i+1 })
-        for i in range(len(new_neighbors)):
-            new_neighbors[i]['angle'] = 2.0 * math.pi * i / len(new_neighbors) 
-        neighbors += new_neighbors
-        return new_neighbors
-
-    ITERATIONS = 2
-
-    global new_neighbors    
-    new_neighbors = neighbors
-    for i in range(ITERATIONS):
-        new_neighbors = expand_neighbors(neighbors, links, new_neighbors, i)
-        
-    return {
-        "nodes": neighbors,
-        "links": links,
-        "root": query
-    }
 
 
 @api.route("/tags/suggestions", methods=["POST"])
