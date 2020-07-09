@@ -16,26 +16,8 @@ with open('./api/config/config.json') as f:
 
 auth = Blueprint("auth", __name__)
 
-@auth.route("/login", methods = ["POST"])
-def login():
-    username = request.json.get('username', None)
-    password = request.json.get('password', None)
 
-    if not validate_user(username, password):
-        return jsonify({'login': False}), 401
-
-    # Create the tokens we will be sending back to the user
-    access_token = create_access_token(identity=username)
-    refresh_token = create_refresh_token(identity=username)
-
-    # Set the JWTs and the CSRF double submit protection cookies
-    # in this response
-    resp = jsonify({'login': True})
-    set_access_cookies(resp, access_token)
-    set_refresh_cookies(resp, refresh_token)
-    return resp, 200
-
-
+# Decorator to protect routes to only logged in users
 def login_required(route):
     @functools.wraps(route)
     def wrapper(*args, **kwds):
@@ -59,6 +41,8 @@ def login_required(route):
         return route(*args, **kwds)
     return wrapper
 
+
+# Decorator to protect routes for only administrators
 def admin_required(route):
     @functools.wraps(route)
     def wrapper(*args, **kwds):
@@ -76,6 +60,26 @@ def admin_required(route):
         except Exception as e:
             print(str(e)) 
             return redirect("/unauthorized"), 302
+    return wrapper
+
+
+# Decorator to protect routes to only unauthenticated users, primarily for login page
+def not_logged_in_required(route):
+    @functools.wraps(route)
+    def wrapper(*args, **kwds):
+        try:
+            token = decode_token(
+                request.cookies.get('access_token_cookie'), 
+                request.cookies.get('csrf_access_token'),
+                allow_expired=True
+            )
+            if token.get('identity'):
+                return redirect("/"), 302
+
+        except Exception as e:
+            return route(*args, **kwds)
+
+        return route(*args, **kwds)
     return wrapper
 
 # Returns true if user logged in at some point, doesn't need current access token
@@ -99,6 +103,27 @@ def authentication_required(route):
 
         return route(*args, **kwds)
     return wrapper
+
+
+@not_logged_in_required
+@auth.route("/login", methods = ["POST"])
+def login():
+    username = request.json.get('username', None)
+    password = request.json.get('password', None)
+
+    if not validate_user(username, password):
+        return jsonify({'login': False}), 401
+
+    # Create the tokens we will be sending back to the user
+    access_token = create_access_token(identity=username)
+    refresh_token = create_refresh_token(identity=username)
+
+    # Set the JWTs and the CSRF double submit protection cookies
+    # in this response
+    resp = jsonify({'login': True})
+    set_access_cookies(resp, access_token)
+    set_refresh_cookies(resp, refresh_token)
+    return resp, 200
 
 
 @auth.route("/authenticated")

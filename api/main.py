@@ -10,7 +10,7 @@ from flask_jwt_extended import (
     set_refresh_cookies, unset_jwt_cookies
 )
 
-from blueprints.auth import authentication_required, admin_required
+from blueprints.auth import authentication_required, admin_required, not_logged_in_required
 from util.user import create_default_admin
 
 app = Flask(__name__, static_folder='../client/dist', static_url_path='/static/')
@@ -32,19 +32,27 @@ app.register_blueprint(users_blueprint, url_prefix = "/user")
 
 create_default_admin()
 
-
+# Front-end routes only accessible when not logged in
 @app.route("/login")
+@not_logged_in_required
+def not_logged_in_pages():
+    return app.send_static_file('index.html')
+
+
+# Front-end routes that are always accessible
 @app.route("/unauthorized")
 def open_pages():
     return app.send_static_file('index.html')
 
 
+# Front-end routes only accessible to admins
 @app.route("/users")
 @admin_required
 def admin_required_pages():
     return app.send_static_file('index.html')
 
 
+# Front-end routes accessible to only logged in users, all remaining routes
 @app.route('/', defaults={'upath': ''})
 @app.route('/<path:upath>')
 @authentication_required
