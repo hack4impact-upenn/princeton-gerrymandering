@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom'
 import axios, { AxiosResponse, AxiosError } from 'axios';
+axios.defaults.withCredentials = true;
 
-import { Layout, Breadcrumb, Row, Col, Input, Button } from 'antd';
+import { Layout, Breadcrumb, Row, Col, Input, Button, Card, Tag } from 'antd';
 const { Search } = Input;
 const { Content, Footer } = Layout;
 
@@ -14,7 +15,11 @@ import FilterList from "../components/FilterList";
 import Banner from "../assets/banner.svg";
 import { Result, Tags, Filter } from "../types/interfaces"
 import queryString from 'query-string'
-import { RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, Redirect } from 'react-router-dom';
+import RelevancyGraph from '../components/RelevancyGraph';
+
+import secureRequest from '../util/secureRequest';
+import isAuthenticated from "../util/isAuthenticated";
 
 interface PostQuery {
     query: string;
@@ -54,6 +59,7 @@ const Home: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
     const [pageSize, setPageSize] = useState(page_size_param);
     const [page, setPage] = useState(page_param)
 
+
     const search = (values: any, page_: number, pageSize_: number) => {
         
         history.pushState({
@@ -70,14 +76,14 @@ const Home: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
 
         setLoaded(false);
         setShowResults(true);
-        axios.post<PostQuery>("/api/search", {
-            query,
-            filters,
-            isOr,
-            page: page_,
-            pageSize: pageSize_
-        }).then((res) => {
-            const data = res.data as any;
+
+        secureRequest("/api/search", "POST", {
+                query,
+                filters,
+                isOr,
+                page: page_,
+                pageSize: pageSize_
+        }).then(data => {
             const hits = data.hits.hits
 
             setTotalResults(data.hits.total.value);
@@ -108,8 +114,7 @@ const Home: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
             });
             setLoaded(true);
             setResults(results);
-
-        }).catch((err) => {
+        }).catch(err => {
             console.log(err)
         })
     };
@@ -125,7 +130,7 @@ const Home: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
             setPage(1);
             search(query, page, pageSize);
         }
-    }, [filters])
+    }, [isModalShowing, filters.length])
 
     const closeModal = () => {
         setModalShowing(false);
@@ -151,8 +156,8 @@ const Home: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
     return (
         <Layout>
             <Navbar></Navbar>
-            <Content className="site-layout" style={{ padding: '50px', paddingBottom: 0, marginTop: 64 }}>
-                <div className="site-layout-content" style={{ background: "#fff", padding: 24 }}>
+            <Content className="site-layout" style={{ padding: 0, paddingBottom: 0, marginTop: 64 }}>
+                <div className="site-layout-content" style={{ background: "#fff", padding: 74, margin: 50 }}>
                     <Search defaultValue={query} placeholder="Search for files..." onSearch={(values) => search(values, page, pageSize)} onChange={(e) => setQuery(e.target.value)} size="large" enterButton />
                     <Button type="link" style={{ padding: "10px 10px 10px 0" }} onClick={() => setModalShowing(true)}><FilterOutlined></FilterOutlined>Filter Results</Button>
                     <FilterList filters={filters} updateFilters={updateFilters}></FilterList>
