@@ -79,11 +79,19 @@ const Resource: React.FC = () => {
         })
     }, []);
 
+    const downloadFile = (id) => {
+        secureRequest(`/api/resource/link/${id}`, "GET").then( (data) => {
+            window.location = data.url
+        }).catch( (error) => {
+            console.log(error)
+        })
+    }
+
     const renderHeader = () => {
         return (
             resource && resource.name &&
             <PageHeader onBack={() => history.back()} style={{ padding: 0 }} title={resource.name} extra={[
-                <Button key={1} type="primary" size="large" href={`https://princeton-gerrymandering.s3.amazonaws.com/${resource && resource.file}`} icon={<DownloadOutlined />}>Download</Button>
+                <Button key={1} type="primary" size="large" onClick = {() => downloadFile(resource.id)} icon={<DownloadOutlined />}>Download</Button>
             ]}></PageHeader>
         )
     }

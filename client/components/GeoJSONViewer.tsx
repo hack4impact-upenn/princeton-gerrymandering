@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom'
 
-import { Popover, Table, Button, Card } from 'antd';
+import { Popover, Table, Button, Card, Empty } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 
 import 'ol/ol.css';
@@ -90,76 +90,79 @@ interface GeoJSONViewerProps {
     source: GeoJSON
 }
 
-const GeoJSONViewer: React.FC<GeoJSONViewerProps> = ({ source } : GeoJSONViewerProps) => {
+const GeoJSONViewer: React.FC<GeoJSONViewerProps> = ({ source }: GeoJSONViewerProps) => {
     const [selectedFeatureProps, setSelectedFeatureProps] = useState({});
     // Storing a function, see https://medium.com/swlh/how-to-store-a-function-with-the-usestate-hook-in-react-8a88dd4eede1
     const [closePopoverFunction, setClosePopOverFunction] = useState(() => () => {
         // Does nothing for now, updated once button is loaded
     })
 
+    const [error, setError] = useState(false)
+
 
     const mapId = `map-${Math.random()}`;
 
     var geojsonObject = source;
-    console.log(source)
-        
-
-    let closePopover = () => {};
+    let closePopover = () => { };
 
     useEffect(() => {
-        const coords = geojsonObject!.features.map((feature) => feature.geometry.coordinates)
-        const boundingBox = boundingExtent(coords);
+        try {
+            const coords = geojsonObject!.features.map((feature) => feature.geometry.coordinates)
+            const boundingBox = boundingExtent(coords);
 
-        var vectorSource = new VectorSource({
-            features: (new GeoJSON()).readFeatures(geojsonObject)
-        });
+            var vectorSource = new VectorSource({
+                features: (new GeoJSON()).readFeatures(geojsonObject)
+            });
 
-        vectorSource.addFeature(new Feature(new Circle([5e6, 7e6], 1e6)));
+            vectorSource.addFeature(new Feature(new Circle([5e6, 7e6], 1e6)));
 
-        const vectorLayer = new VectorLayer({
-            source: vectorSource,
-            style: styleFunction
-        });
+            const vectorLayer = new VectorLayer({
+                source: vectorSource,
+                style: styleFunction
+            });
 
-        const map = new Map({
-            layers: [
-                new TileLayer({
-                    source: new OSM()
-                }),
-                vectorLayer
-            ],
-            target: document.getElementById(mapId),
-            view: new View({
-                center: [0, 0],
-                zoom: 5
+            const map = new Map({
+                layers: [
+                    new TileLayer({
+                        source: new OSM()
+                    }),
+                    vectorLayer
+                ],
+                target: document.getElementById(mapId),
+                view: new View({
+                    center: [0, 0],
+                    zoom: 5
+                })
+            });
+
+            map.getView().fit(boundingBox, map.getSize())
+
+            const popover = document.getElementById('popover')
+            const popup = new Overlay({
+                element: popover,
+                autoPan: true,
+                offset: [0, 10]
             })
-        });
+            map.addOverlay(popup)
 
-        map.getView().fit(boundingBox, map.getSize())
+            map.on("click", function (e) {
+                map.forEachFeatureAtPixel(e.pixel, function (feature, layer) {
+                    const geometry = feature.getGeometry();
+                    const coord = geometry.getCoordinates();
 
-        const popover = document.getElementById('popover')
-        const popup = new Overlay({
-            element: popover,
-            autoPan: true,
-            offset: [0, 10]
-        })
-        map.addOverlay(popup)
+                    popup.setPositioning('top-center')
+                    popup.setPosition(coord)
 
-        map.on("click", function (e) {
-            map.forEachFeatureAtPixel(e.pixel, function (feature, layer) {
-                const geometry = feature.getGeometry();
-                const coord = geometry.getCoordinates();
+                    setSelectedFeatureProps(feature.values_)
+                })
+            });
 
-                popup.setPositioning('top-center')
-                popup.setPosition(coord)
-
-                setSelectedFeatureProps(feature.values_)
+            setClosePopOverFunction(() => () => {
+                popup.setPosition(undefined)
             })
-        }); 
-
-        setClosePopOverFunction(() => () => {
-            popup.setPosition(undefined)
-        })
+        } catch {
+            setError(true)
+        }
 
     }, [])
 
@@ -171,15 +174,18 @@ const GeoJSONViewer: React.FC<GeoJSONViewerProps> = ({ source } : GeoJSONViewerP
         "key": ind
     }))
 
+    if(error){
+        return <Empty description = {"No File Preview Available"}></Empty>
+    }
     return (
         <React.Fragment>
-            <Card id = "popover" title = "Feature Properties" extra = {<Button onClick = {closePopoverFunction} id = "close-popover" danger icon = {<CloseOutlined></CloseOutlined>}></Button>}>
-                    <Table columns={[
-                        { title: "Property", dataIndex: "property", key: "property" },
-                        { title: "Value", dataIndex: "value", key: "value" }
-                    ]} dataSource={currentPropertiesTableData}>
+            <Card id="popover" title="Feature Properties" extra={<Button onClick={closePopoverFunction} id="close-popover" danger icon={<CloseOutlined></CloseOutlined>}></Button>}>
+                <Table columns={[
+                    { title: "Property", dataIndex: "property", key: "property" },
+                    { title: "Value", dataIndex: "value", key: "value" }
+                ]} dataSource={currentPropertiesTableData}>
 
-                    </Table>
+                </Table>
             </Card>
             <div id={mapId} className="map" style={{
                 width: "100%", height: "600px"
