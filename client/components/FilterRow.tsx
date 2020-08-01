@@ -125,7 +125,7 @@ const FilterRow: React.FC<FilterRowProps> = ({ filters, index, updateFilters, up
                 }
                 onChange={(e) => updateAttribute(e.toString())}
                 style={{ minWidth: 168 }}
-                value={ filters[index].attribute }
+                // value={ filters[index].attribute }
             >
                 <Option value="locations">Locations</Option>
                 <Option value="people">People</Option>
@@ -135,7 +135,7 @@ const FilterRow: React.FC<FilterRowProps> = ({ filters, index, updateFilters, up
                 placeholder="Select a filter"
                 onChange={(e) => updateFilter(e.toString())}
                 style={{ minWidth: 168 }}
-                value = {filters[index].filter }
+                // value = {filters[index].filter }
             >
                 {/* <Option value="is">Is</Option>
           <Option value="is_not">Is not</Option> */}
