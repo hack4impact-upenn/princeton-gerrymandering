@@ -7,6 +7,7 @@ import random
 from .auth import login_required, admin_required
 from requests_aws4auth import AWS4Auth
 from elasticsearch import Elasticsearch, RequestsHttpConnection
+import boto3, boto3.session
 
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
@@ -41,6 +42,13 @@ with open('./api/config/config.json') as f:
         verify_certs=True,
         connection_class=RequestsHttpConnection
     )
+
+    session = boto3.Session(
+        aws_access_key_id=config.get("AWS_ACCESS_KEY"),
+        aws_secret_access_key=config.get("AWS_SECRET_KEY"),
+        region_name=config.get("S3_REGION")
+    )
+    s3_client = session.client('s3', config=boto3.session.Config(signature_version='s3v4'))
 
 
 @api.route("/search", methods=["POST"])
@@ -86,6 +94,29 @@ def resource(id):
     res = es.search(index=config.get("ELASTICSEARCH_INDEX"), body=query)
     return res
 
+  
+@api.route("/resource/link/<string:id>")
+@login_required
+def get_link(id):
+    query = {
+        "query": {
+            "match": {
+                "_id": id
+            }
+        }
+    }
+    res = es.search(index=config.get("ELASTICSEARCH_INDEX"), body=query)
+    path = res["hits"]["hits"][0]["_source"]["path"]
+
+    link = s3_client.generate_presigned_url('get_object', Params={
+        'Bucket': config.get("AWS_FILE_BUCKET"),
+        'Key': path
+    },  ExpiresIn=10)
+
+    return {
+        "url": link
+    }
+  
 
 @api.route("/suggest/<string:id>", methods=["GET"])
 @login_required
@@ -98,6 +129,7 @@ def suggest(id):
             recs_results.append(json.dumps(recData))      
     return jsonify({'recs' : recs_results}), 200
 
+  
 @api.route("/tags/add", methods = ["POST"])
 @login_required
 def add_tags():
