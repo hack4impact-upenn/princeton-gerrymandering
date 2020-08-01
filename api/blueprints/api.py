@@ -87,6 +87,17 @@ def resource(id):
     return res
 
 
+@api.route("/suggest/<string:id>", methods=["GET"])
+@login_required
+def suggest(id):
+    recs_results = []
+    recomendations = ["yLgaL3MB0Xqz4htPkZFX", "-HJ-fnMBfx90TkXxN87_", "T3K2dHMBfx90TkXx78nu", "Rrh6MHMB0Xqz4htPypUV", "gLjtLnMB0Xqz4htPsJCP", "AnKifnMBfx90TkXx-c-k", "LLg5NnMB0Xqz4htPj7Ds"]
+    for rec in recomendations:
+        recData = resource(rec)
+        if(recData):
+            recs_results.append(json.dumps(recData))      
+    return jsonify({'recs' : recs_results}), 200
+
 @api.route("/tags/add", methods = ["POST"])
 @login_required
 def add_tags():

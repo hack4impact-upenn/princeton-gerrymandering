@@ -6,25 +6,14 @@ import '../css/SimilarCarousel.css';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { Result, Tags } from "../types/interfaces"
 
-const SimilarCarousel: React.FC = () => {
+interface SimilarCarouselSuggestions {
+  suggestions: Result[];
+  refresh: () => void;
+}
 
-    const listData : Result[] = [];
-    for (let i = 0; i < 11; i++) {
-      listData.push({
-        id: i.toString(),
-        file: 'test-data/2002 Districts 2010.xlsx',
-        name: "2002 Districts 2010.xlsx",
-        tags: {
-          "locations": ["Arizona", "Bushwick", "California"],
-          "orgs": ["RNC", "GOP", "DNC"],
-          "groups": ["Latinos", "Asians"],
-          "time": ["2002", "2020"]
-        },
-        text: "Ant Design, a design language for background applications, is refined by Ant UED Team.",
-        type: "xlsx"
-      });
-    }
-
+const SimilarCarousel: React.FC<SimilarCarouselSuggestions> = ({suggestions,  refresh}) => {
+    const listData : Result[] = suggestions;
+    
     function NextArrow(props:any) {
       const { className, style, onClick } = props;
       return (

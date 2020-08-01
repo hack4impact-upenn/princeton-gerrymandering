@@ -8,5 +8,5 @@ package-lock.json
 __pycache__
 api/.flaskenv
 api/venv
-
+api/config
 client/dist/*-bundle.js
