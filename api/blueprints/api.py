@@ -1,6 +1,7 @@
 import math
 from flask import Blueprint, request, jsonify
 import certifi
+import os
 import json
 import random
 
@@ -24,7 +25,7 @@ from util.elasticsearch_queries import (
 
 api = Blueprint('api', __name__)
 
-with open('./api/config/config.json') as f:
+with open(os.path.join(os.path.dirname(__file__), "..", "config", "config.json")) as f:
     config = json.load(f)
 
     awsauth = AWS4Auth(

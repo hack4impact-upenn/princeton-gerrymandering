@@ -1,5 +1,6 @@
 import functools
 import json
+import os
 from flask import request, Blueprint, jsonify, redirect
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
@@ -11,7 +12,7 @@ from flask_jwt_extended import (
 from util.user import is_admin, validate_user
 from jwt import ExpiredSignatureError
 
-with open('./api/config/config.json') as f:
+with open(os.path.join(os.path.dirname(__file__), "..", "config", "config.json")) as f:
     config = json.load(f)
 
 auth = Blueprint("auth", __name__)

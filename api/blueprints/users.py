@@ -1,12 +1,13 @@
 import functools
 import json
+import os
 from flask import request, Blueprint, jsonify, redirect
 
 from .auth import admin_required
 from util.user import is_admin, validate_user, get_users, create_user, delete_user, update_password
 from jwt import ExpiredSignatureError
 
-with open('./api/config/config.json') as f:
+with open(os.path.join(os.path.dirname(__file__), "..", "config", "config.json")) as f:
     config = json.load(f)
 
 users = Blueprint("users", __name__)

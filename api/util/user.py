@@ -1,9 +1,10 @@
 import json
+import os
 import boto3
 from botocore.exceptions import ClientError
 from werkzeug.security import check_password_hash, generate_password_hash
 
-with open('./api/config/config.json') as f:
+with open(os.path.join(os.path.dirname(__file__), "..", "config", "config.json")) as f:
     config = json.load(f)
 
 session = boto3.Session(

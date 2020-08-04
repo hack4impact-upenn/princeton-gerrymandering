@@ -14,7 +14,7 @@ from blueprints.auth import authentication_required, admin_required, not_logged_
 from util.user import create_default_admin
 
 app = Flask(__name__, static_folder='../client/dist', static_url_path='/static/')
-with open('./api/config/config.json') as f:
+with open(os.path.join(os.path.dirname(__file__), "config", "config.json")) as f:
     config = json.load(f)
     app.config.update(config)
 CORS(app)
@@ -60,6 +60,6 @@ def user_protected_pages(upath):
     return app.send_static_file('index.html')
 
 
-app.run(
-    debug=os.environ.get("FLASK_ENV") == "development"
-)
+#app.run(
+#    debug=os.environ.get("FLASK_ENV") == "development"
+#)
