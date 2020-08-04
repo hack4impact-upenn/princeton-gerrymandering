@@ -174,6 +174,7 @@ def configure_api(app):
         }), 200
 
     @api.route("/tags/suggestions", methods=["POST"])
+    @jwt_required
     def suggested_tags():
         req = request.get_json()
         query = {
