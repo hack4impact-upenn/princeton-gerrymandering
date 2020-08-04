@@ -10,11 +10,11 @@ from flask_jwt_extended import (
     set_refresh_cookies, unset_jwt_cookies
 )
 
-from blueprints.auth import authentication_required, admin_required, not_logged_in_required
+from blueprints.auth import login_required, admin_required, not_logged_in_required
 from util.user import create_default_admin
 
 app = Flask(__name__, static_folder='../client/dist', static_url_path='/static/')
-with open('./api/config/config.json') as f:
+with open(os.path.join(os.path.dirname(__file__), "config", "config.json")) as f:
     config = json.load(f)
     app.config.update(config)
 CORS(app)
@@ -55,11 +55,12 @@ def admin_required_pages():
 # Front-end routes accessible to only logged in users, all remaining routes
 @app.route('/', defaults={'upath': ''})
 @app.route('/<path:upath>')
-@authentication_required
+@login_required
 def user_protected_pages(upath):
     return app.send_static_file('index.html')
 
 
-app.run(
-    debug=os.environ.get("FLASK_ENV") == "development"
-)
+if not config.get("PRODUCTION"):
+    app.run(
+        debug=os.environ.get("FLASK_ENV") == "development"
+    )
