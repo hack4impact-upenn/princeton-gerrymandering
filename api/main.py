@@ -55,7 +55,7 @@ def admin_required_pages():
 # Front-end routes accessible to only logged in users, all remaining routes
 @app.route('/', defaults={'upath': ''})
 @app.route('/<path:upath>')
-@authentication_required
+@login_required
 def user_protected_pages(upath):
     return app.send_static_file('index.html')
 
