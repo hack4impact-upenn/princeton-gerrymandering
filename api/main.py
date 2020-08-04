@@ -10,7 +10,7 @@ from flask_jwt_extended import (
     set_refresh_cookies, unset_jwt_cookies
 )
 
-from blueprints.auth import authentication_required, admin_required, not_logged_in_required
+from blueprints.auth import login_required, admin_required, not_logged_in_required
 from util.user import create_default_admin
 
 app = Flask(__name__, static_folder='../client/dist', static_url_path='/static/')
