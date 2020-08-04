@@ -11,6 +11,7 @@ Before running the application, you'll need to set configuration variables in th
 
 | Variable                 | Description                                                                                                                                                            |
 |--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| PRODUCTION        | A boolean representing whether or not the application is in production 
 | ELASTICSEARCH_URL        | The URL for the ElasticSearch instance hosting the processed JSON documents, this URL should not contain `http://` or `https://`, just the domain URL itself                                                                                            |
 | ELASTICSEARCH_INDEX      | The main index the where the processed JSON documents are stored                                                                                                       |
 | ELASTICSEARCH_REGION      | The region in which the ElasticSearch server is running                                                                                                       |

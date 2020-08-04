@@ -60,6 +60,7 @@ def user_protected_pages(upath):
     return app.send_static_file('index.html')
 
 
-#app.run(
-#    debug=os.environ.get("FLASK_ENV") == "development"
-#)
+if not config.get("PRODUCTION"):
+    app.run(
+        debug=os.environ.get("FLASK_ENV") == "development"
+    )
