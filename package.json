@@ -25,6 +25,7 @@
     "d3-force": "^2.0.1",
     "dayjs": "^1.8.24",
     "dotenv": "^8.2.0",
+    "js-cookies": "^1.0.4",
     "less": "^3.11.1",
     "ol": "^6.3.1",
     "pdf-viewer-reactjs": "^2.0.6",
