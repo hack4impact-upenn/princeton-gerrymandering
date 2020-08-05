@@ -82,7 +82,7 @@ def configure_api(app):
                     print("Unsupported filter type %s" % filter['filter'])
 
         query = search_query(req, and_filters, and_not_filters, or_filters)
-        res = es.search(index=config.get("ELASTICSEARCH_INDEX"), body=query)
+        res = es.search(index=config.get("ELASTICSEARCH_INDEX"), body=query, _source=["path", "name", "tags", "filetype"])
         return res
 
     @api.route("/resource/<string:id>", methods=["GET"])
@@ -174,6 +174,7 @@ def configure_api(app):
         }), 200
 
     @api.route("/tags/suggestions", methods=["POST"])
+    @jwt_required
     def suggested_tags():
         req = request.get_json()
         query = {
