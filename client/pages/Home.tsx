@@ -3,9 +3,12 @@ import ReactDOM from 'react-dom'
 import axios, { AxiosResponse, AxiosError } from 'axios';
 axios.defaults.withCredentials = true;
 
-import { Layout, Breadcrumb, Row, Col, Input, Button, Card, Tag } from 'antd';
+import { Layout, Breadcrumb, Row, Col, Input, Button, Card, Tag, Steps } from 'antd';
+const { Step } = Steps;
 const { Search } = Input;
 const { Content, Footer } = Layout;
+
+import HomepageInfographic from "../components/HomepageInfographic"
 
 import { FilterOutlined } from "@ant-design/icons";
 import Navbar from "../components/Navbar";
@@ -16,7 +19,6 @@ import Banner from "../assets/banner.svg";
 import { Result, Tags, Filter } from "../types/interfaces"
 import queryString from 'query-string'
 import { RouteComponentProps, Redirect } from 'react-router-dom';
-import RelevancyGraph from '../components/RelevancyGraph';
 
 import secureRequest from '../util/secureRequest';
 import isAuthenticated from "../util/isAuthenticated";
@@ -93,7 +95,6 @@ const Home: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
                 const filename = document._source.path;
                 const file_ext = filename.split(".").slice(-1)[0]
 
-
                 const tags: Tags = {}
                 Object.keys(document._source.tags).forEach((tag: string) => {
                     let tagList: string[] = document._source.tags[tag];
@@ -157,6 +158,7 @@ const Home: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
         <Layout>
             <Navbar></Navbar>
             <Content className="site-layout" style={{ padding: 0, paddingBottom: 0, marginTop: 64 }}>
+                <HomepageInfographic></HomepageInfographic>
                 <div className="site-layout-content" style={{ background: "#fff", padding: 74, margin: 50 }}>
                     <Search defaultValue={query} placeholder="Search for files..." onSearch={(values) => search(values, page, pageSize)} onChange={(e) => setQuery(e.target.value)} size="large" enterButton />
                     <Button type="link" style={{ padding: "10px 10px 10px 0" }} onClick={() => setModalShowing(true)}><FilterOutlined></FilterOutlined>Filter Results</Button>
