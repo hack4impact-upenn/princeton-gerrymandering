@@ -113,7 +113,7 @@ const HomepageInfographic : React.FC<HomepageInfographicProps> = ({ searchBarRef
                             <Step key = {ind} title={slide.name} description={slide.tagline} />
                         ))}
                     </Steps>
-                    <Button type="primary" onClick = {() => scrollToRef(searchBarRef)}>Get Started Exploring</Button>
+                    <Button style = {{ margin: 20 }} type="primary" onClick = {() => scrollToRef(searchBarRef)}>Get Started Exploring</Button>
                 </div>
             </Col>
             <Col xs = {24} sm = {16} md = {18}>
