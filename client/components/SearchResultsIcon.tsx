@@ -75,7 +75,6 @@ const SearchResultsIcon: React.FC<SearchResultsIconProps> = ({ filetype }: Searc
 
   const icon = svgMap.get(filetype.toLowerCase());
   return <img src={icon}/>;
-
 };
 
 export default SearchResultsIcon;

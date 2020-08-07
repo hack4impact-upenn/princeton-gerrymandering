@@ -30,7 +30,6 @@ const secureRequest = (url, method, data) => {
                         body: method == "GET" ? undefined : JSON.stringify(data) 
                     }).then( (res) => {
                         if(res.ok){
-                            console.log(res)
                             res.json().then((data) => {
                                 resolve(data)
                             })   
@@ -48,7 +47,6 @@ const secureRequest = (url, method, data) => {
                 })
             } else {
                 if(res.ok){
-                    console.log(res)
                     res.json().then((data) => {
                         resolve(data)
                     })   

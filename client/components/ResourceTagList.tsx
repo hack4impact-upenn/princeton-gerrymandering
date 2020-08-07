@@ -86,8 +86,6 @@ const ResourceTagList: React.FC<TagListProps> = ( {resource, isAdmin, refresh} )
     let reducer = (acc, x) => (x != null || acc);
     let hasTags = tagList.reduce( reducer, false );
 
-    console.log(hasTags)
-
     return (
         <React.Fragment>
             { hasTags && 

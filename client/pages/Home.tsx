@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import ReactDOM from 'react-dom'
 import axios, { AxiosResponse, AxiosError } from 'axios';
 axios.defaults.withCredentials = true;
@@ -60,6 +60,8 @@ const Home: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
     const [totalResults, setTotalResults] = useState(0);
     const [pageSize, setPageSize] = useState(page_size_param);
     const [page, setPage] = useState(page_param)
+
+    const searchBarRef = useRef(null);
 
 
     const search = (values: any, page_: number, pageSize_: number) => {
@@ -158,8 +160,9 @@ const Home: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
         <Layout>
             <Navbar></Navbar>
             <Content className="site-layout" style={{ padding: 0, paddingBottom: 0, marginTop: 64 }}>
-                <HomepageInfographic></HomepageInfographic>
-                <div className="site-layout-content" style={{ background: "#fff", padding: 74, margin: 50 }}>
+                <HomepageInfographic searchBarRef = {searchBarRef}></HomepageInfographic>
+                {/* <HomepageInfographic></HomepageInfographic> */}
+                <div ref = {searchBarRef} className="site-layout-content" style={{ background: "#fff", padding: 74, margin: 50 }}>
                     <Search defaultValue={query} placeholder="Search for files..." onSearch={(values) => search(values, page, pageSize)} onChange={(e) => setQuery(e.target.value)} size="large" enterButton />
                     <Button type="link" style={{ padding: "10px 10px 10px 0" }} onClick={() => setModalShowing(true)}><FilterOutlined></FilterOutlined>Filter Results</Button>
                     <FilterList filters={filters} updateFilters={updateFilters}></FilterList>

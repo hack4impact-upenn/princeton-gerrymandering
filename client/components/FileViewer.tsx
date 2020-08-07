@@ -46,7 +46,6 @@ const FileViewer: React.FC<FileViewerProps> = ({ resource }: FileViewerProps) =>
         viewer = <Empty description = {"No File Preview Available"}></Empty>
       }
     } else if(type == "zip"){
-      console.log("ss")
       viewer = <ZipFileViewer data = { JSON.parse(resource!.text) }></ZipFileViewer>
     } else if(["png", "jpg", "jpeg", "gif", "svg"].includes(type)) {
       viewer = <img src = {link} style = {{display: "block", marginLeft: "auto", marginRight: "auto"}}></img>

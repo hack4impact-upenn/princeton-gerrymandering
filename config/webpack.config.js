@@ -80,7 +80,7 @@ module.exports = {
                 use: ['@svgr/webpack'],
             },
             {
-                test: /\.(eot|woff|woff2|ttf|svg|png|jpg)$/,
+                test: /\.(eot|woff|woff2|ttf|svg|jpg)$/,
                 loader: 'url-loader?limit=30000&name=[name]-[hash].[ext]'
             }
         ]
