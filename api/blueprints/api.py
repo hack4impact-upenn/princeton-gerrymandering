@@ -86,7 +86,8 @@ with open('./api/config/config.json') as f:
     vector_dims = 512
     vector_index = AnnoyIndex(vector_dims, 'angular')
     annoy_fn = config.get("ANNOY_FN")
-    vector_index.load("hofeller-files-use-chunk128_annoy.bin") # super fast, will just mmap the file
+    print(annoy_fn)
+    vector_index.load(annoy_fn) # super fast, will just mmap the file
 
 
     with open(config.get("IDX_NAME"), 'r') as f:
@@ -99,6 +100,10 @@ with open('./api/config/config.json') as f:
 
 def generate_embeddings (messages_in):
     return session.run(embedded_text, feed_dict={text_input: messages_in})
+
+searcher2 = QzUSESearchFactory(vector_index, idx_name, name_idx, es, ES_INDEX_FULL_TEXT, ES_INDEX_CHUNK, generate_embeddings)
+search2 = searcher2.query_by_doc_text("W7iIMnMB0Xqz4htP_qrj", k=100)
+print(search2.show(show_seed_docs=False))
 
 
 @api.route("/search", methods=["POST"])
@@ -168,12 +173,12 @@ def get_link(id):
     }
   
 
-@api.route("/suggest/<string:id>", methods=["GET"])
-@login_required
+#@api.route("/suggest/<string:id>", methods=["GET"])
+#@login_required
 def suggest(id):
     searcher = QzUSESearchFactory(vector_index, idx_name, name_idx, es, ES_INDEX_FULL_TEXT, ES_INDEX_CHUNK, generate_embeddings)
-    search2 = searcher2.query_by_doc_text(id, k=100)
-    search2.show(show_seed_docs=False)
+    searcher = searcher.query_by_doc_text(id, k=100)
+    recs_results = searcher.show(show_seed_docs=False)
     recs_results = []
     recomendations = [id, "yLgaL3MB0Xqz4htPkZFX", "-HJ-fnMBfx90TkXxN87_", "T3K2dHMBfx90TkXx78nu", "Rrh6MHMB0Xqz4htPypUV", "gLjtLnMB0Xqz4htPsJCP", "AnKifnMBfx90TkXx-c-k", "LLg5NnMB0Xqz4htPj7Ds"]
     for rec in recomendations:

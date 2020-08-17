@@ -28,6 +28,7 @@ class QzUSESearch():
         
         
     def show(self, show_seed_docs=True):
+        recs = []
         for res, dist in self.results:
             terms_in_doc = [search_term in remove_accents(res["_source"]["text"].lower()) for search_term in self.search_terms] 
             doc_id = res["_id"].split("*")[0]
@@ -35,10 +36,8 @@ class QzUSESearch():
             is_seed_doc = doc_id in self.seed_docs or res["_id"] in self.seed_docs
             if is_seed_doc and not show_seed_docs:
                 continue
-            print(res["_id"])
-            print("http://example.com/{}".format(doc_id.split("*")[0]))
-            print("sanity checks: ({})".format( terms_in_doc))
-            print("")
+            recs.append(res["_id"])
+        return recs    
             
     def get_result(self, show_seed_docs=False):
       results = []
