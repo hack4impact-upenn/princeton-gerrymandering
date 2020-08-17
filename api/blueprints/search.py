@@ -114,11 +114,8 @@ class DocUSESearch():
             if is_seed_doc and not show_seed_docs:
                 continue
             if doc_id not in results:
-                print(doc_id)
-                print("http://example.com/{}".format(doc_id.split("*")[0]))
-                print("")
                 results.append(doc_id)
-        return resutls
+        return results
 
 
 class QzUSESearchFactory():
