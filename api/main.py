@@ -10,29 +10,25 @@ from flask_jwt_extended import (
     set_refresh_cookies, unset_jwt_cookies
 )
 
-from blueprints.auth import authentication_required, admin_required, not_logged_in_required
+from blueprints.auth import configure_jwt, admin_required, admin_required_frontend, not_logged_in_required
 from util.user import create_default_admin
 
 app = Flask(__name__, static_folder='../client/dist', static_url_path='/static/')
-with open('./api/config/config.json') as f:
+with open(os.path.join(os.path.dirname(__file__), "config", "config.json")) as f:
     config = json.load(f)
     app.config.update(config)
 CORS(app)
 
-jwt = JWTManager(app)
+jwt = configure_jwt(app)
 
-from blueprints.api import api as api_blueprint
-app.register_blueprint(api_blueprint, url_prefix = "/api")
+from blueprints.api import configure_api
+from blueprints.auth import configure_auth
+from blueprints.users import configure_users
 
-from blueprints.auth import auth as auth_blueprint
-app.register_blueprint(auth_blueprint, url_prefix = "/auth")
+configure_api(app)
+configure_auth(app)
+configure_users(app)
 
-from blueprints.users import users as users_blueprint
-app.register_blueprint(users_blueprint, url_prefix = "/user")
-
-create_default_admin()
-
-# Front-end routes only accessible when not logged in
 @app.route("/login")
 @not_logged_in_required
 def not_logged_in_pages():
@@ -47,7 +43,7 @@ def open_pages():
 
 # Front-end routes only accessible to admins
 @app.route("/users")
-@admin_required
+@admin_required_frontend
 def admin_required_pages():
     return app.send_static_file('index.html')
 
@@ -55,11 +51,12 @@ def admin_required_pages():
 # Front-end routes accessible to only logged in users, all remaining routes
 @app.route('/', defaults={'upath': ''})
 @app.route('/<path:upath>')
-@authentication_required
+@jwt_refresh_token_required
 def user_protected_pages(upath):
     return app.send_static_file('index.html')
 
 
-app.run(
-    debug=os.environ.get("FLASK_ENV") == "development"
-)
+if not config.get("PRODUCTION"):
+    app.run(
+        debug=os.environ.get("FLASK_ENV") == "development"
+    )

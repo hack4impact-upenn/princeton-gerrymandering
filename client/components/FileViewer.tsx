@@ -2,9 +2,11 @@ import React, {useState, useEffect} from 'react';
 import ReactDOM from 'react-dom'
 import GeoJSONViewer from './GeoJSONViewer';
 import { Result } from '../types/interfaces';
-import { Empty } from 'antd';
+import { Empty, Typography } from 'antd';
 
 import secureRequest from "../util/secureRequest";
+import ZipFileViewer from './ZipFileViewer';
+import { text } from 'd3';
 
 interface FileViewerProps {
   resource: Result | undefined
@@ -43,6 +45,17 @@ const FileViewer: React.FC<FileViewerProps> = ({ resource }: FileViewerProps) =>
       } catch(err) {
         viewer = <Empty description = {"No File Preview Available"}></Empty>
       }
+    } else if(type == "zip"){
+      console.log("ss")
+      viewer = <ZipFileViewer data = { JSON.parse(resource!.text) }></ZipFileViewer>
+    } else if(["png", "jpg", "jpeg", "gif", "svg"].includes(type)) {
+      viewer = <img src = {link} style = {{display: "block", marginLeft: "auto", marginRight: "auto"}}></img>
+    } else if(["txt", "log"].includes(type)){
+      viewer = <div style = {{backgroundColor: "whitesmoke", padding: "15px", maxHeight: 400, overflowY: "scroll"}}>
+        <Typography.Text style = {{
+          fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace",
+        }}>{resource!.text}</Typography.Text>
+      </div>
     } else {
       viewer = <Empty description = {"No File Preview Available"}></Empty>
     }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { Collapse, Tag } from 'antd';
+import { Collapse, Tag, Empty } from 'antd';
 import { CaretRightOutlined } from '@ant-design/icons';
 import { Result, Tags, TagsMap } from "../types/interfaces"
 
@@ -75,16 +75,27 @@ const ResourceTagList: React.FC<TagListProps> = ( {resource, isAdmin, refresh} )
         }
         return null;
     }
-    
+
+    let tagList = tagsToShow.map(
+        tag => (
+            renderTagsListItem(tag)
+        )
+    )
+
+    // Check if any tags
+    let reducer = (acc, x) => (x != null || acc);
+    let hasTags = tagList.reduce( reducer, false );
+
+    console.log(hasTags)
+
     return (
         <React.Fragment>
-            <Collapse bordered={true} expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}>
-                {tagsToShow.map(
-                    tag => (
-                        renderTagsListItem(tag)
-                    )
-                )}
-            </Collapse>
+            { hasTags && 
+                <Collapse bordered={true} expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}>
+                    { tagList }
+                </Collapse>
+            }
+            { !hasTags && <Empty description = {"No file tags available"}></Empty>}
         </React.Fragment>
     );
 }

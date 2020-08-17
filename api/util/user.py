@@ -1,9 +1,10 @@
 import json
+import os
 import boto3
 from botocore.exceptions import ClientError
 from werkzeug.security import check_password_hash, generate_password_hash
 
-with open('./api/config/config.json') as f:
+with open(os.path.join(os.path.dirname(__file__), "..", "config", "config.json")) as f:
     config = json.load(f)
 
 session = boto3.Session(
@@ -15,8 +16,6 @@ bucket = s3.Bucket(config['AWS_USER_BUCKET'])
 
 
 def validate_user(username, password):
-    print(username, password)
-
     try:
         user_file = s3.Object(config['AWS_USER_BUCKET'], username).get()
     except ClientError as e:
@@ -24,7 +23,6 @@ def validate_user(username, password):
         return False
 
     user = json.loads(user_file['Body'].read().decode('utf-8'))
-    print(user)
     if user.get("password_hash") is None:
         return False
     else:
@@ -33,14 +31,9 @@ def validate_user(username, password):
 
 # Creates new user with given username and password, throws error if user exists already
 def create_user(username, password, is_admin=False):
-    user_exists = False
-    try:
-        user_file = s3.Object(config['AWS_USER_BUCKET'], username).get()
-        user_exists = True
-    except ClientError:
-        user_exists = False
+    exists = user_exists(username)
 
-    if user_exists:
+    if exists:
         raise ValueError("User %s already exists" % username)
 
     user = {
@@ -52,6 +45,16 @@ def create_user(username, password, is_admin=False):
     user_object.put(
         Body=(bytes(json.dumps(user).encode('UTF-8')))
     )
+
+
+def user_exists(username):
+    user_exists = False
+    try:
+        user_file = s3.Object(config['AWS_USER_BUCKET'], username).get()
+        user_exists = True
+    except ClientError:
+        user_exists = False
+    return user_exists
 
 
 # Only from admin accounts

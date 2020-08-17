@@ -1,13 +1,15 @@
 import math
 from flask import Blueprint, request, jsonify
 import certifi
+import os
 import json
 import random
 
-from .auth import login_required, admin_required
+from .auth import configure_jwt, admin_required
 from requests_aws4auth import AWS4Auth
 from elasticsearch import Elasticsearch, RequestsHttpConnection
-import boto3, boto3.session
+import boto3
+import boto3.session
 
 import tensorflow as tf
 import tensorflow_hub as hub
@@ -28,6 +30,13 @@ from requests_aws4auth import AWS4Auth
 import sys 
 from .search import *
 
+
+from util.elasticsearch_queries import (
+    or_contains_filter, or_not_contains_filter,
+    and_filter, search_query,
+    add_tags_query, remove_tags_query
+)
+
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
     jwt_refresh_token_required, create_refresh_token,
@@ -35,26 +44,18 @@ from flask_jwt_extended import (
     set_refresh_cookies, unset_jwt_cookies
 )
 
-from util.elasticsearch_queries import (
-    or_contains_filter, or_not_contains_filter,
-    and_filter, search_query, 
-    add_tags_query, remove_tags_query
-)
-
-api = Blueprint('api', __name__)
-
-with open('./api/config/config.json') as f:
+with open(os.path.join(os.path.dirname(__file__), "..", "config", "config.json")) as f:
     config = json.load(f)
 
     awsauth = AWS4Auth(
-        config.get("AWS_ACCESS_KEY"), 
-        config.get("AWS_SECRET_KEY"), 
-        config.get("ELASTICSEARCH_REGION"), 
+        config.get("AWS_ACCESS_KEY"),
+        config.get("AWS_SECRET_KEY"),
+        config.get("ELASTICSEARCH_REGION"),
         'es'
     )
-    
+
     es = Elasticsearch(
-        hosts=[ {'host': config.get("ELASTICSEARCH_URL"), 'port': 443} ],
+        hosts=[{'host': config.get("ELASTICSEARCH_URL"), 'port': 443}],
         http_auth=awsauth,
         use_ssl=True,
         timeout=30,
@@ -67,8 +68,9 @@ with open('./api/config/config.json') as f:
         aws_secret_access_key=config.get("AWS_SECRET_KEY"),
         region_name=config.get("S3_REGION")
     )
-    s3_client = session.client('s3', config=boto3.session.Config(signature_version='s3v4'))
-
+    s3_client = session.client(
+        's3', config=boto3.session.Config(signature_version='s3v4'))
+              
     use_module_url = "https://tfhub.dev/google/universal-sentence-encoder-multilingual/1"
     g = tf.Graph()
     with g.as_default():
@@ -101,157 +103,158 @@ with open('./api/config/config.json') as f:
 def generate_embeddings (messages_in):
     return session.run(embedded_text, feed_dict={text_input: messages_in})
 
-@api.route("/search", methods=["POST"])
-@login_required
-def api_index():
-    req = request.get_json()
-    and_filters = []
-    and_not_filters = []
-    or_filters = []
 
-    for filter in req['filters']:
-        if req['isOr']:
-            if filter['filter'] == "contains":
-                or_filters.append(or_contains_filter(filter))
-            elif filter['filter'] == "contains_not":
-                or_filters.append(or_not_contains_filter(filter))
-            else:
-                print("Unsupported filter type %s" % filter['filter'])
+def configure_api(app):
+    api = Blueprint('api', __name__)
 
-        if not req['isOr']:
-            if filter['filter'] == "contains":
-                and_filters.append(and_filter(filter))
-            elif filter['filter'] == "contains_not":
-                and_not_filters.append(and_filter(filter))
-            else:
-                print("Unsupported filter type %s" % filter['filter'])
+    @api.route("/search", methods=["POST"])
+    @jwt_required
+    def search_documents():
+        req = request.get_json()
+        and_filters = []
+        and_not_filters = []
+        or_filters = []
 
-    query = search_query(req, and_filters, and_not_filters, or_filters)
-    res = es.search(index=config.get("ELASTICSEARCH_INDEX"), body=query)
-    return res
+        for filter in req['filters']:
+            if req['isOr']:
+                if filter['filter'] == "contains":
+                    or_filters.append(or_contains_filter(filter))
+                elif filter['filter'] == "contains_not":
+                    or_filters.append(or_not_contains_filter(filter))
+                else:
+                    print("Unsupported filter type %s" % filter['filter'])
 
+            if not req['isOr']:
+                if filter['filter'] == "contains":
+                    and_filters.append(and_filter(filter))
+                elif filter['filter'] == "contains_not":
+                    and_not_filters.append(and_filter(filter))
+                else:
+                    print("Unsupported filter type %s" % filter['filter'])
 
-@api.route("/resource/<string:id>", methods=["GET"])
-@login_required
-def resource(id):
-    query = {
-        "query": {
-            "match": {
-                "_id": id
+        query = search_query(req, and_filters, and_not_filters, or_filters)
+        res = es.search(index=config.get("ELASTICSEARCH_INDEX"), body=query, _source=["path", "name", "tags", "filetype"])
+        return res
+
+    @api.route("/resource/<string:id>", methods=["GET"])
+    @jwt_required
+    def resource(id):
+        query = {
+            "query": {
+                "match": {
+                    "_id": id
+                }
             }
         }
-    }
-    res = es.search(index=config.get("ELASTICSEARCH_INDEX"), body=query)
-    return res
+        res = es.search(index=config.get("ELASTICSEARCH_INDEX"), body=query)
+        return res
 
-  
-@api.route("/resource/link/<string:id>")
-@login_required
-def get_link(id):
-    query = {
-        "query": {
-            "match": {
-                "_id": id
+    @api.route("/resource/link/<string:id>")
+    @jwt_required
+    def get_link(id):
+        query = {
+            "query": {
+                "match": {
+                    "_id": id
+                }
             }
         }
-    }
-    res = es.search(index=config.get("ELASTICSEARCH_INDEX"), body=query)
-    path = res["hits"]["hits"][0]["_source"]["path"]
+        link = s3_client.generate_presigned_url('get_object', Params={
+            'Bucket': config.get("AWS_FILE_BUCKET"),
+            'Key': path
+        },  ExpiresIn=10)
 
-    link = s3_client.generate_presigned_url('get_object', Params={
-        'Bucket': config.get("AWS_FILE_BUCKET"),
-        'Key': path
-    },  ExpiresIn=10)
+        return {
+            "url": link
+        }
 
-    return {
-        "url": link
-    }
-  
-
-@api.route("/suggest/<string:id>", methods=["GET"])
-@login_required
-def suggest(id):
-    try:
+    @api.route("/suggest/<string:id>", methods=["GET"])
+    @jwt_required
+    def suggest(id):
+      try:
         searcher = QzUSESearchFactory(vector_index, idx_name, name_idx, es, ES_INDEX_FULL_TEXT, ES_INDEX_CHUNK, generate_embeddings)
         searcher = searcher.query_by_doc_text(id, k=50)
         recomendations = searcher.show(show_seed_docs=False)
-    except:
+      except:
         recomendations = []
-    for rec in recomendations:
+      for rec in recomendations:
         recData = resource(rec)
         if(recData):
             recs_results.append(json.dumps(recData))      
-    return jsonify({'recs' : recs_results}), 200
+      return jsonify({'recs' : recs_results}), 200
+    
+    @api.route("/tags/add", methods=["POST"])
+    @jwt_required
+    def add_tags():
+        req = request.get_json()
 
-  
-@api.route("/tags/add", methods = ["POST"])
-@login_required
-def add_tags():
-    req = request.get_json()
+        tag_type = req.get("tagType")
+        tag_value = req.get("tagValue")
+        resource_id = req.get("resourceId")
 
-    tag_type = req.get("tagType")
-    tag_value = req.get("tagValue")
-    resource_id = req.get("resourceId")
+        if tag_type not in ["locations", "people", "orgs", "other"] or tag_value is "":
+            return jsonify({
+                "msg": "Please fill out all fields"
+            }), 400
 
-    if tag_type not in ["locations", "people", "orgs", "other"] or tag_value is "":
+        res = es.update(index=config.get("ELASTICSEARCH_INDEX"), id=resource_id,
+                        body=add_tags_query(tag_type, tag_value), refresh=True)
+
         return jsonify({
-            "msg": "Please fill out all fields" 
-        }), 400
+            "added": True
+        }), 200
 
-    res = es.update(index=config.get("ELASTICSEARCH_INDEX"), id=resource_id, body=add_tags_query(tag_type, tag_value), refresh=True)
+    @api.route("/tags/remove", methods=["POST"])
+    @admin_required
+    def remove_tags():
+        req = request.get_json()
 
-    return jsonify({
-        "added": True
-    }), 200
+        tag_type = req.get("tagType")
+        tag_value = req.get("tagValue")
+        resource_id = req.get("resourceId")
 
+        if tag_type not in ["locations", "people", "orgs", "other"] or tag_value is "":
+            return jsonify({
+                "msg": "Unknown error"
+            }), 400
 
-@api.route("/tags/remove", methods = ["POST"])
-@admin_required
-def remove_tags():
-    req = request.get_json()
-
-    tag_type = req.get("tagType")
-    tag_value = req.get("tagValue")
-    resource_id = req.get("resourceId")
-
-    if tag_type not in ["locations", "people", "orgs", "other"] or tag_value is "":
+        res = es.update(index=config.get("ELASTICSEARCH_INDEX"), id=resource_id,
+                        body=remove_tags_query(tag_type, tag_value), refresh=True)
         return jsonify({
-            "msg": "Unknown error" 
-        }), 400
+            "removed": True
+        }), 200
 
-    res = es.update(index=config.get("ELASTICSEARCH_INDEX"), id=resource_id, body=remove_tags_query(tag_type, tag_value), refresh=True)
-    return jsonify({
-        "removed": True
-    }), 200
-
-
-@api.route("/tags/suggestions", methods=["POST"])
-@login_required
-def suggested_tags():
-    req = request.get_json()
-    query = {
-        "query": {
-            "prefix": {
-                "tags.%s" % req["type"]: {
-                    "value": req["query"].lower()
+    @api.route("/tags/suggestions", methods=["POST"])
+    @jwt_required
+    def suggested_tags():
+        req = request.get_json()
+        query = {
+            "query": {
+                "prefix": {
+                    "tags.%s" % req["type"]: {
+                        "value": req["query"].lower()
+                    }
                 }
-            }
-        },
-        "aggs": {
-            "suggested_tags": {
-                "terms": {
-                    "field": "tags.%s.keyword" % req["type"],
-                    "size": 1000
+            },
+            "aggs": {
+                "suggested_tags": {
+                    "terms": {
+                        "field": "tags.%s.keyword" % req["type"],
+                        "size": 1000
+                    }
                 }
-            }
-        },
-        "size": 0
-    }
+            },
+            "size": 0
+        }
 
-    res = es.search(index=config.get("ELASTICSEARCH_INDEX"), body=query)
-    buckets = res["aggregations"]["suggested_tags"]["buckets"]
-    all_tags = [bucket["key"] for bucket in buckets]
-    tags = list(filter( lambda tag : tag.lower().startswith(req["query"].lower()), all_tags))[0:25]
-    return {
-        "tags": tags
-    }
+        res = es.search(index=config.get("ELASTICSEARCH_INDEX"), body=query)
+        buckets = res["aggregations"]["suggested_tags"]["buckets"]
+        all_tags = [bucket["key"] for bucket in buckets]
+        tags = list(filter(lambda tag: tag.lower().startswith(
+            req["query"].lower()), all_tags))[0:25]
+        return {
+            "tags": tags
+        }
+
+    # This MUST be the last line in the configuration function
+    app.register_blueprint(api, url_prefix="/api")
