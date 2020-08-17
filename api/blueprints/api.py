@@ -171,17 +171,19 @@ def configure_api(app):
     @api.route("/suggest/<string:id>", methods=["GET"])
     @jwt_required
     def suggest(id):
-      try:
-        searcher = QzUSESearchFactory(vector_index, idx_name, name_idx, es, ES_INDEX_FULL_TEXT, ES_INDEX_CHUNK, generate_embeddings)
-        searcher = searcher.query_by_doc_text(id, k=50)
-        recomendations = searcher.show(show_seed_docs=False)
-      except:
-        recomendations = []
-      for rec in recomendations:
-        recData = resource(rec)
-        if(recData):
-            recs_results.append(json.dumps(recData))      
-      return jsonify({'recs' : recs_results}), 200
+        try:
+            searcher = QzUSESearchFactory(vector_index, idx_name, name_idx, es, ES_INDEX_FULL_TEXT, ES_INDEX_CHUNK, generate_embeddings)
+            searcher = searcher.query_by_doc_text(id, k=50)
+            recomendations = searcher.show(show_seed_docs=False)
+        except:
+            recomendations = []
+        for rec in recomendations:
+            recData = resource(rec)
+            if(recData):
+                recs_results.append(json.dumps(recData))      
+        return jsonify({
+            'recs' : recs_results
+            }), 200
     
     @api.route("/tags/add", methods=["POST"])
     @jwt_required
