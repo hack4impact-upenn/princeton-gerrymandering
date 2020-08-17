@@ -7,7 +7,7 @@
     "start": "npm run build & npm run api",
     "dev": "npm run api & webpack-dev-server --config=config/webpack.config.js --hot",
     "build": "webpack --config=config/webpack.config.js",
-    "api": "python3 ./api/main.py",
+    "api": "python ./api/main.py",
     "webpack-dev": "webpack-dev-server --config=config/webpack.config.js --hot"
   },
   "keywords": [],

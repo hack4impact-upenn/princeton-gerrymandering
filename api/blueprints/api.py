@@ -23,7 +23,7 @@ import unicodedata
 import csv 
 from os.path import basename
 import unicodedata
-from .to_sentences import *
+from .   import *
 from requests_aws4auth import AWS4Auth
 import sys 
 from .search import *
@@ -86,7 +86,7 @@ with open('./api/config/config.json') as f:
     vector_dims = 512
     vector_index = AnnoyIndex(vector_dims, 'angular')
     annoy_fn = config.get("ANNOY_FN")
-    vector_index.load(annoy_fn) # super fast, will just mmap the file
+    vector_index.load("hofeller-files-use-chunk128_annoy.bin") # super fast, will just mmap the file
 
 
     with open(config.get("IDX_NAME"), 'r') as f:
