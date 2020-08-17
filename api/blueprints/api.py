@@ -23,7 +23,7 @@ import unicodedata
 import csv 
 from os.path import basename
 import unicodedata
-from .   import *
+from .to_sentences import *
 from requests_aws4auth import AWS4Auth
 import sys 
 from .search import *
