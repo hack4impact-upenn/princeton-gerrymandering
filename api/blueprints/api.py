@@ -23,10 +23,10 @@ import unicodedata
 import csv 
 from os.path import basename
 import unicodedata
-from to_sentences import *
+from .to_sentences import *
 from requests_aws4auth import AWS4Auth
 import sys 
-from search import *
+from .search import *
 
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
