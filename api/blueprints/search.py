@@ -4,7 +4,7 @@ import numpy as np
 import unicodedata
 import csv
 from os.path import basename
-from to_sentences import to_short_paragraphs
+from .to_sentences import to_short_paragraphs
 
 def remove_accents(input_str):
     nfkd_form = unicodedata.normalize('NFKD', input_str)
