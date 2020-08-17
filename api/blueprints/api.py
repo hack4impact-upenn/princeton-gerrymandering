@@ -9,6 +9,25 @@ from requests_aws4auth import AWS4Auth
 from elasticsearch import Elasticsearch, RequestsHttpConnection
 import boto3, boto3.session
 
+import tensorflow as tf
+import tensorflow_hub as hub
+import tf_sentencepiece
+import time
+import numpy as np
+import faiss
+from annoy import AnnoyIndex
+from elasticsearch import Elasticsearch
+from elasticsearch_dsl import Search
+import numpy as np
+import unicodedata
+import csv 
+from os.path import basename
+import unicodedata
+from to_sentences import *
+from requests_aws4auth import AWS4Auth
+import sys 
+from search import *
+
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
     jwt_refresh_token_required, create_refresh_token,
@@ -49,6 +68,37 @@ with open('./api/config/config.json') as f:
         region_name=config.get("S3_REGION")
     )
     s3_client = session.client('s3', config=boto3.session.Config(signature_version='s3v4'))
+
+    use_module_url = "https://tfhub.dev/google/universal-sentence-encoder-multilingual/1"
+    g = tf.Graph()
+    with g.as_default():
+        text_input = tf.placeholder(dtype=tf.string, shape=[None])
+        embed_module = hub.Module(use_module_url)
+        embedded_text = embed_module(text_input)
+        init_op = tf.group([tf.global_variables_initializer(), tf.tables_initializer()])
+    g.finalize()
+
+    session = tf.Session(graph=g)
+    session.run(init_op)
+
+    ES_INDEX_FULL_TEXT = config.get("ES_INDEX_FULL_TEXT")
+    ES_INDEX_CHUNK = config.get("ES_INDEX_CHUNK")
+    vector_dims = 512
+    vector_index = AnnoyIndex(vector_dims, 'angular')
+    annoy_fn = config.get("ANNOY_FN")
+    vector_index.load(annoy_fn) # super fast, will just mmap the file
+
+
+    with open(config.get("IDX_NAME"), 'r') as f:
+        idx_name = json.load(f)
+    with open(config.get("NAME_IDX"), 'r') as f:
+        name_idx = json.load(f)
+    vec_cnt = vector_index.get_n_items()
+
+
+
+def generate_embeddings (messages_in):
+    return session.run(embedded_text, feed_dict={text_input: messages_in})
 
 
 @api.route("/search", methods=["POST"])
@@ -121,8 +171,11 @@ def get_link(id):
 @api.route("/suggest/<string:id>", methods=["GET"])
 @login_required
 def suggest(id):
+    searcher = QzUSESearchFactory(vector_index, idx_name, name_idx, es, ES_INDEX_FULL_TEXT, ES_INDEX_CHUNK, generate_embeddings)
+    search2 = searcher2.query_by_doc_text(id, k=100)
+    search2.show(show_seed_docs=False)
     recs_results = []
-    recomendations = ["yLgaL3MB0Xqz4htPkZFX", "-HJ-fnMBfx90TkXxN87_", "T3K2dHMBfx90TkXx78nu", "Rrh6MHMB0Xqz4htPypUV", "gLjtLnMB0Xqz4htPsJCP", "AnKifnMBfx90TkXx-c-k", "LLg5NnMB0Xqz4htPj7Ds"]
+    recomendations = [id, "yLgaL3MB0Xqz4htPkZFX", "-HJ-fnMBfx90TkXxN87_", "T3K2dHMBfx90TkXx78nu", "Rrh6MHMB0Xqz4htPypUV", "gLjtLnMB0Xqz4htPsJCP", "AnKifnMBfx90TkXx-c-k", "LLg5NnMB0Xqz4htPj7Ds"]
     for rec in recomendations:
         recData = resource(rec)
         if(recData):
