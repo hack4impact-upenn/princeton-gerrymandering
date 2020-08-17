@@ -106,18 +106,19 @@ class DocUSESearch():
       self.es_index_full_text = es_index_full_text
 
     def show(self, show_seed_docs=True):
-      results = []
-      for res, dist in self.results:
-          doc_id = res["_id"].split("*")[0]
-          chunk = res["_id"].split("*")[1]
-          is_seed_doc = doc_id is self.seed_doc
-          if is_seed_doc and not show_seed_docs:
-              continue
-          if doc_id not in results:
-              print(doc_id)
-              print("http://example.com/{}".format(doc_id.split("*")[0]))
-              print("")
-          results.append(doc_id)
+        results = []
+        for res, dist in self.results:
+            doc_id = res["_id"].split("*")[0]
+            chunk = res["_id"].split("*")[1]
+            is_seed_doc = doc_id is self.seed_doc
+            if is_seed_doc and not show_seed_docs:
+                continue
+            if doc_id not in results:
+                print(doc_id)
+                print("http://example.com/{}".format(doc_id.split("*")[0]))
+                print("")
+                results.append(doc_id)
+        return resutls
 
 
 class QzUSESearchFactory():
