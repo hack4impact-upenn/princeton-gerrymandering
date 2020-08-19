@@ -12,3 +12,4 @@ api/config
 client/dist/*-bundle.js
 api/blueprints/*.bin
 api/blueprints/*.json
+api/config/config.json

@@ -9,3 +9,14 @@ elasticsearch==7.6.0
 boto3
 flask_jwt_extended
 requests_aws4auth
+tqdm
+syntok
+BeautifulSoup4
+w3lib
+tensorflow==1.14.0
+tf_sentencepiece==0.1.83
+annoy
+faiss
+tensorflow_hub
+pandas
+elasticsearch_dsl==7.0.
