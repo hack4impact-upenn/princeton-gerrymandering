@@ -44,6 +44,9 @@ from flask_jwt_extended import (
     set_refresh_cookies, unset_jwt_cookies
 )
 
+def generate_embeddings (messages_in):
+    return session.run(embedded_text, feed_dict={text_input: messages_in})
+
 with open(os.path.join(os.path.dirname(__file__), "..", "config", "config.json")) as f:
     config = json.load(f)
 
@@ -101,8 +104,7 @@ with open(os.path.join(os.path.dirname(__file__), "..", "config", "config.json")
     searcher = QzUSESearchFactory(vector_index, idx_name, name_idx, es, ES_INDEX_FULL_TEXT, ES_INDEX_CHUNK, generate_embeddings)
 
 
-def generate_embeddings (messages_in):
-    return session.run(embedded_text, feed_dict={text_input: messages_in})
+
 
 
 def configure_api(app):
