@@ -70,7 +70,7 @@ with open(os.path.join(os.path.dirname(__file__), "..", "config", "config.json")
     )
     s3_client = session.client(
         's3', config=boto3.session.Config(signature_version='s3v4'))
-              
+         '''     
     use_module_url = "https://tfhub.dev/google/universal-sentence-encoder-multilingual/1"
     g = tf.Graph()
     with g.as_default():
@@ -98,7 +98,7 @@ with open(os.path.join(os.path.dirname(__file__), "..", "config", "config.json")
         name_idx = json.load(f)
     vec_cnt = vector_index.get_n_items()
 
-
+'''
 
 def generate_embeddings (messages_in):
     return session.run(embedded_text, feed_dict={text_input: messages_in})
@@ -171,8 +171,9 @@ def configure_api(app):
     @api.route("/suggest/<string:id>", methods=["GET"])
     @jwt_required
     def suggest(id):
+        '''
         try:
-            searcher = QzUSESearchFactory(vector_index, idx_name, name_idx, es, ES_INDEX_FULL_TEXT, ES_INDEX_CHUNK, generate_embeddings)
+            s   earcher = QzUSESearchFactory(vector_index, idx_name, name_idx, es, ES_INDEX_FULL_TEXT, ES_INDEX_CHUNK, generate_embeddings)
             searcher = searcher.query_by_doc_text(id, k=50)
             recomendations = searcher.show(show_seed_docs=False)
         except:
@@ -180,7 +181,8 @@ def configure_api(app):
         for rec in recomendations:
             recData = resource(rec)
             if(recData):
-                recs_results.append(json.dumps(recData))      
+                recs_results.append(json.dumps(recData))     
+                ''' 
         return jsonify({
             'recs' : recs_results
             }), 200
