@@ -11,25 +11,6 @@ from elasticsearch import Elasticsearch, RequestsHttpConnection
 import boto3
 import boto3.session
 
-import tensorflow as tf
-import tensorflow_hub as hub
-import tf_sentencepiece
-import time
-import numpy as np
-import faiss
-from annoy import AnnoyIndex
-from elasticsearch import Elasticsearch
-from elasticsearch_dsl import Search
-import numpy as np
-import unicodedata
-import csv 
-from os.path import basename
-import unicodedata
-from .to_sentences import *
-from requests_aws4auth import AWS4Auth
-import sys 
-from .search import *
-
 
 from util.elasticsearch_queries import (
     or_contains_filter, or_not_contains_filter,
@@ -70,7 +51,7 @@ with open(os.path.join(os.path.dirname(__file__), "..", "config", "config.json")
     )
     s3_client = session.client(
         's3', config=boto3.session.Config(signature_version='s3v4'))
-         '''     
+    
     use_module_url = "https://tfhub.dev/google/universal-sentence-encoder-multilingual/1"
     g = tf.Graph()
     with g.as_default():
@@ -90,6 +71,8 @@ with open(os.path.join(os.path.dirname(__file__), "..", "config", "config.json")
     annoy_fn = config.get("ANNOY_FN")
     print(annoy_fn)
     vector_index.load(annoy_fn) # super fast, will just mmap the file
+    searcher = QzUSESearchFactory(vector_index, idx_name, name_idx, es, ES_INDEX_FULL_TEXT, ES_INDEX_CHUNK, generate_embeddings)
+            
 
 
     with open(config.get("IDX_NAME"), 'r') as f:
@@ -98,7 +81,6 @@ with open(os.path.join(os.path.dirname(__file__), "..", "config", "config.json")
         name_idx = json.load(f)
     vec_cnt = vector_index.get_n_items()
 
-'''
 
 def generate_embeddings (messages_in):
     return session.run(embedded_text, feed_dict={text_input: messages_in})
@@ -171,9 +153,7 @@ def configure_api(app):
     @api.route("/suggest/<string:id>", methods=["GET"])
     @jwt_required
     def suggest(id):
-        '''
         try:
-            s   earcher = QzUSESearchFactory(vector_index, idx_name, name_idx, es, ES_INDEX_FULL_TEXT, ES_INDEX_CHUNK, generate_embeddings)
             searcher = searcher.query_by_doc_text(id, k=50)
             recomendations = searcher.show(show_seed_docs=False)
         except:
@@ -181,8 +161,7 @@ def configure_api(app):
         for rec in recomendations:
             recData = resource(rec)
             if(recData):
-                recs_results.append(json.dumps(recData))     
-                ''' 
+                recs_results.append(json.dumps(recData))
         return jsonify({
             'recs' : recs_results
             }), 200
