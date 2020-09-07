@@ -124,7 +124,7 @@ def configure_api(app):
     @api.route("/suggest/<string:id>", methods=["GET"])
     @jwt_required
     def suggest(id):
-        x = requests.post("http://ec2-18-219-178-168.us-east-2.compute.amazonaws.com/predict", params = {"id":id})
+        x = requests.post(config.get("API_ENDPOINT"), params = {"id":id})
         return x.json(), 200
 
     @api.route("/tags/add", methods=["POST"])
