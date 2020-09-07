@@ -25,6 +25,7 @@ Before running the application, you'll need to set configuration variables in th
 | AWS_USER_BUCKET | The name of the bucket the application should use to store user information |
 | DEFAULT_ADMIN_USER | The username for the default admin account created when the app starts and no admin account already exists |
 | DEFAULT_ADMIN_PASS | The password for the default admin account created when the app starts and no admin account already exists  |
+| API_ENDPOINT | The end point for suggestions API |
 
 ## Running the Application
 ### Development
