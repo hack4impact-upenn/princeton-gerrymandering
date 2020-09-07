@@ -4,6 +4,7 @@ import certifi
 import os
 import json
 import random
+import requests
 
 from .auth import configure_jwt, admin_required
 from requests_aws4auth import AWS4Auth
@@ -123,14 +124,8 @@ def configure_api(app):
     @api.route("/suggest/<string:id>", methods=["GET"])
     @jwt_required
     def suggest(id):
-        recs_results = []
-        recomendations = ["yLgaL3MB0Xqz4htPkZFX", "-HJ-fnMBfx90TkXxN87_", "T3K2dHMBfx90TkXx78nu",
-                          "Rrh6MHMB0Xqz4htPypUV", "gLjtLnMB0Xqz4htPsJCP", "AnKifnMBfx90TkXx-c-k", "LLg5NnMB0Xqz4htPj7Ds"]
-        for rec in recomendations:
-            recData = resource(rec)
-            if(recData):
-                recs_results.append(json.dumps(recData))
-        return jsonify({'recs': recs_results}), 200
+        x = requests.post("http://ec2-18-219-178-168.us-east-2.compute.amazonaws.com/predict", params = {"id":id})
+        return x.json(), 200
 
     @api.route("/tags/add", methods=["POST"])
     @jwt_required

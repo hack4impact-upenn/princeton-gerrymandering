@@ -35,7 +35,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ resource }: FileViewerProps) =>
 
     if(type == "doc" || type == "docx" || type == "document"){
       viewer = <iframe src={microsoftPath} width='100%' height='720px' />
-    } else if(type == "xls" || type == "xlsx" || type == "xlsm"){
+    } else if(type == "xls" || type == "xlsx" || type == "xlsm" || type =="pptx"){
       viewer = <iframe src={microsoftPath} width='100%' height='540px' />
     } else if(type == "pdf"){
       viewer = <embed src={link} type="application/pdf" width="100%" height="720px" />
